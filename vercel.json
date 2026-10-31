@@ -2,17 +2,21 @@
   "version": 2,
   "builds": [
     { "src": "*.html", "use": "@vercel/static" },
-    { "src": "assets/**", "use": "@vercel/static" }
+    { "src": "assets/**", "use": "@vercel/static" },
+    { "src": "api/*.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/", "dest": "/index.html" },
     { "src": "/producao", "dest": "/producao-tablet.html" },
     { "src": "/finalizacao", "dest": "/finalizacao-tablet.html" },
+    { "src": "/admin", "dest": "/admin.html" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" }
   ],
   "public": true,
   "env": {
     "SUPABASE_URL": "",
-    "SUPABASE_ANON_KEY": ""
+    "SUPABASE_ANON_KEY": "",
+    "SUPABASE_SERVICE_KEY": ""
   }
 }

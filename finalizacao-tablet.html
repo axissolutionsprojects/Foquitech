@@ -340,4 +340,10 @@ document.querySelectorAll('.ct-row .ct-inp').forEach(ctCalc);
   });
 })();
 function goBack(url){sessionStorage.setItem('vt-back','1');location.href=url;}
+
+async function doLogout(){
+  if(!window._supabase) return location.replace('login.html');
+  await window._supabase.auth.signOut();
+  location.replace('login.html');
+}
 </script><div id="glass-ov" class="glass-overlay"></div></body></html>
