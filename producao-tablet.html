@@ -1194,6 +1194,9 @@ function goBack(url){sessionStorage.setItem('vt-back','1');location.href=url;}
 function doLogout(){
   Object.keys(localStorage).forEach(k=>{ if(k.startsWith('sb-')) localStorage.removeItem(k); });
   sessionStorage.clear();
+  location.replace('login.html');
+});
+  sessionStorage.clear();
   // timeout garante redirect mesmo se signOut() travar
   const go = ()=>location.replace('login.html');
   setTimeout(go, 1500);
