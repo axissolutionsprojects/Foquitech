@@ -78,7 +78,7 @@ async function login() {
   btn.disabled = true;
   btn.textContent = 'Entrando…';
   erro.textContent = '';
-  const email = usuario + '@foquitech.app';
+  const email = usuario + '@foquitech.internal';
   const { error } = await sb.auth.signInWithPassword({ email, password: senha });
   if(error) {
     erro.textContent = 'Usuário ou senha incorretos.';
