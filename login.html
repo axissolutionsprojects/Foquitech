@@ -32,15 +32,15 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   <div class="brand">FoquiTech</div>
 
   <div class="field">
-    <label for="usuario">FoquID</label>
+    <label for="usuario">Credencial Secreta</label>
     <input type="text" id="usuario" placeholder="adm01" autocomplete="username" autocapitalize="none" spellcheck="false">
   </div>
 
   <div class="field">
-    <label for="senha">Senha</label>
+    <label for="senha">Senha Secreta</label>
     <div class="pwd-wrap">
       <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password">
-      <button class="eye-btn" type="button" id="eye" aria-label="Mostrar senha">
+      <button class="eye-btn" type="button" id="eye" aria-label="Mostrar senha secreta">
         <svg id="eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         <svg id="eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
@@ -81,7 +81,7 @@ async function login() {
   const email = usuario + '@foquitech.internal';
   const { error } = await sb.auth.signInWithPassword({ email, password: senha });
   if(error) {
-    erro.textContent = 'FoquID ou senha incorretos.';
+    erro.textContent = 'Credencial ou senha incorretos.';
     btn.disabled = false;
     btn.textContent = 'Entrar';
   } else {
