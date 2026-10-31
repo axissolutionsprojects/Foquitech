@@ -32,7 +32,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   <div class="brand">FoquiTech</div>
 
   <div class="field">
-    <label for="usuario">Usuário</label>
+    <label for="usuario">FoquID</label>
     <input type="text" id="usuario" placeholder="adm01" autocomplete="username" autocapitalize="none" spellcheck="false">
   </div>
 
@@ -81,7 +81,7 @@ async function login() {
   const email = usuario + '@foquitech.internal';
   const { error } = await sb.auth.signInWithPassword({ email, password: senha });
   if(error) {
-    erro.textContent = 'Usuário ou senha incorretos.';
+    erro.textContent = 'FoquID ou senha incorretos.';
     btn.disabled = false;
     btn.textContent = 'Entrar';
   } else {
