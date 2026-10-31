@@ -119,18 +119,21 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 <script>
 // ── Auth Guard ──────────────────────────────────────────────────────────────
 (async function authGuard(){
-  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-  const sb = createClient('https://dmqvxrvazwtpqzkgxhcb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtcXZ4cnZhend0cHF6a2d4aGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTI2MTMsImV4cCI6MjEwOTAyODYxM30.2O7Kqf0jPQeS7pfaZBtMV8FJf81IYoFJf1_Y5GkYS00');
-  const { data: { session } } = await sb.auth.getSession();
-  if(!session){ location.replace('login.html'); return; }
-  window._supabase = sb;
-  window._session = session;
-  // Mostrar link admin se perfil = admin
-  const _perfil = session.user.user_metadata?.perfil || session.user.app_metadata?.perfil;
-  if(_perfil === 'admin'){
-    const adminBtn = document.getElementById('admin-link');
-    if(adminBtn) adminBtn.style.display = 'flex';
-  }
+  try {
+    const timeout = new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000));
+    const load = import('https://esm.sh/@supabase/supabase-js@2');
+    const { createClient } = await Promise.race([load, timeout]);
+    const sb = createClient('https://dmqvxrvazwtpqzkgxhcb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtcXZ4cnZhend0cHF6a2d4aGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTI2MTMsImV4cCI6MjEwOTAyODYxM30.2O7Kqf0jPQeS7pfaZBtMV8FJf81IYoFJf1_Y5GkYS00');
+    const { data: { session } } = await sb.auth.getSession();
+    if(!session){ location.replace('login.html'); return; }
+    window._supabase = sb;
+    window._session = session;
+    const _perfil = session.user.user_metadata?.perfil || session.user.app_metadata?.perfil;
+    if(_perfil === 'admin'){
+      const adminBtn = document.getElementById('admin-link');
+      if(adminBtn) adminBtn.style.display = 'flex';
+    }
+  } catch(e){ location.replace('login.html'); }
 })();
 // ── /Auth Guard ──────────────────────────────────────────────────────────────
 
