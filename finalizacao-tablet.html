@@ -41,11 +41,11 @@ body{min-height:100vh;}
 .tnum{font-variant-numeric:tabular-nums;}
 svg{display:block;}
 
-.page-title{font-size:clamp(2.4rem,5vw,3.4rem);line-height:1;color:var(--color-cream);margin-bottom:6px;}
+.page-title{font-size:2.8rem;line-height:1;color:var(--color-cream);margin-bottom:6px;}
 .page-sub{font-size:16px;color:var(--color-cream-muted);margin-bottom:28px;}
 .glass-overlay{display:none;}
 /* Mod cards (padrão Produção) */
-.mod-cards{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,20px);}
+.mod-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .mod-card{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;
   background:var(--color-card);border:1.5px solid #087A64;border-radius:32px;
   padding:22px 24px 22px;min-height:200px;cursor:pointer;color:inherit;
@@ -57,7 +57,7 @@ svg{display:block;}
 .mod-card.span2{grid-column:1/-1;}
 .mod-wm{position:absolute;top:-12%;right:-8%;width:72%;aspect-ratio:1;opacity:0.20;pointer-events:none;color:var(--color-cream);transition:color .15s;}
 .mod-wm svg{width:100%;height:100%;}
-.mod-title{font-family:'Ohno',Georgia,serif;font-size:clamp(2rem,4.5vw,2.8rem);line-height:1;color:var(--color-cream);margin-bottom:5px;position:relative;z-index:1;}
+.mod-title{font-family:'Ohno',Georgia,serif;font-size:2.4rem;line-height:1;color:var(--color-cream);margin-bottom:5px;position:relative;z-index:1;}
 .mod-sub{font-size:13px;color:var(--color-cream-muted);line-height:1.4;position:relative;z-index:1;}
 /* legado — views internas */
 .sum-top{display:flex;align-items:center;gap:18px;}
@@ -188,30 +188,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 .view.active .mark{view-transition-name:vt-avatar;contain:layout;}
 .view.active .date-pill{view-transition-name:vt-date;contain:layout;}
 
-/* ── Responsive ─────────────────────────────────────────────────── */
-@media(max-width:600px){
-  .wrap{padding:14px 12px 36px;}
-  .mod-cards{grid-template-columns:1fr;gap:14px;}
-  .grid-st{grid-template-columns:1fr;}
-  .page-title{font-size:clamp(2rem,8vw,3.2rem)!important;}
-  .sum-name{font-size:clamp(1.1rem,4.5vw,1.6rem);}
-  .rec-name{font-size:clamp(1rem,4vw,1.4rem);}
-  .d-title{font-size:clamp(1.4rem,5vw,2rem);}
-  .btn-save{font-size:clamp(0.85rem,3vw,1rem);}
-  .rec-num{font-size:clamp(1.8rem,7vw,2.6rem);}
-  .home-wrap{min-height:auto;padding-top:16px;}
-  .home-header{gap:12px;margin-bottom:20px;}
-  .mark{width:44px;height:44px;}
-}
-@media(min-width:601px) and (max-width:767px){
-  .mod-cards{grid-template-columns:1fr 1fr;}
-  .grid-st{grid-template-columns:1fr 1fr;}
-}
-@media(min-width:1024px){
-  .wrap{max-width:900px;}
-}
-@media(min-width:1400px){
-  .wrap{max-width:1100px;}
+
 }
 </style></head>
 <body><div class="wrap">
@@ -222,7 +199,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   </div>
   <div class="home-wrap">
     <div class="home-header">
-      <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+      <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
       <div class="home-header-text">
         <div class="page-title ohno" style="view-transition-name:vt-fin">Finalização</div>
         <div class="page-sub">Selecione uma área para continuar.</div>
@@ -253,7 +230,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title ohno">Checklist</div>
       <div class="page-sub">Abertura e montagem.</div>
@@ -272,7 +249,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title ohno">Contagem</div>
       <div class="page-sub">Disponível, meta e a fazer.</div>
@@ -290,7 +267,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title ohno">Estoque</div>
       <div class="page-sub">Insumos de finalização.</div>

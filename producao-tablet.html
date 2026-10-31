@@ -19,7 +19,7 @@
   --r:24px;
 }
 body{background:var(--bg);font-family:'Heading',Arial,sans-serif;color:var(--cream);-webkit-font-smoothing:antialiased;min-height:100vh;}
-.page{max-width:820px;margin:0 auto;min-height:100vh;padding:clamp(14px,3vw,28px) clamp(12px,2.5vw,24px) clamp(36px,5vw,48px);}
+.page{max-width:820px;margin:0 auto;min-height:100vh;padding:28px 24px 48px;}
 /* Header */
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
 .mark{width:54px;height:54px;flex-shrink:0;}
@@ -34,28 +34,28 @@ body{background:var(--bg);font-family:'Heading',Arial,sans-serif;color:var(--cre
 .back-circle{display:none;}
 .back-label{display:none;}
 /* Page title */
-.page-title{font-family:'Ohno',Georgia,serif;font-size:clamp(2.4rem,5vw,3.4rem);color:var(--cream);margin-bottom:4px;}
+.page-title{font-family:'Ohno',Georgia,serif;font-size:2.8rem;color:var(--cream);margin-bottom:4px;}
 .page-sub{font-size:15px;color:var(--muted);margin-bottom:24px;}
 /* Module cards (v-home 2x2 grid) */
-.mod-cards{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,20px);}
+.mod-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .mod-card{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;background:var(--card);border:1.5px solid #087A64;border-radius:32px;padding:28px 28px 28px;min-height:260px;cursor:pointer;color:inherit;transition:background .15s,border-color .15s;-webkit-tap-highlight-color:transparent;}
 .home-wrap{display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 56px);}
-.home-wrap .mod-cards{flex:1;}
+
 .mod-card[aria-pressed="true"],.mod-card.sel{background:var(--pink);border-color:var(--pink);}
 .mod-card[aria-pressed="true"] .mod-title,.mod-card.sel .mod-title{color:var(--ink);}
 .mod-card[aria-pressed="true"] .mod-sub,.mod-card.sel .mod-sub{color:rgba(0,79,64,.75);}
 .mod-card[aria-pressed="true"] .mod-wm,.mod-card.sel .mod-wm{color:var(--ink);}
 .mod-wm{position:absolute;top:-12%;right:-8%;width:72%;aspect-ratio:1;opacity:0.20;pointer-events:none;color:var(--cream);transition:color .15s;}
 .mod-wm svg{width:100%;height:100%;}
-.mod-title{font-family:'Ohno',Georgia,serif;font-size:clamp(2rem,4.5vw,2.8rem);line-height:1;color:var(--cream);margin-bottom:5px;position:relative;z-index:1;}
+.mod-title{font-family:'Ohno',Georgia,serif;font-size:2.4rem;line-height:1;color:var(--cream);margin-bottom:5px;position:relative;z-index:1;}
 .mod-sub{font-size:13px;color:var(--muted);line-height:1.4;position:relative;z-index:1;}
 /* Recipe grid */
-.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,1.5vw,16px);}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .rec-card{background:var(--rec-card);border:1.5px solid var(--rec-border);border-radius:var(--r);padding:20px 12px;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-align:center;transition:background .15s,border-color .15s;-webkit-tap-highlight-color:transparent;}
 .rec-card[aria-pressed="true"],.rec-card.sel{background:var(--pink);border-color:var(--pink);}
 .rec-card[aria-pressed="true"] .rec-name,.rec-card.sel .rec-name{color:var(--ink);}
 .rec-card[aria-pressed="true"] .rec-days,.rec-card.sel .rec-days{color:var(--ink);opacity:.75;}
-.rec-name{font-family:'Ohno',Georgia,serif;font-size:clamp(1rem,2vw,1.3rem);color:var(--cream);line-height:1.3;}
+.rec-name{font-family:'Ohno',Georgia,serif;font-size:1.1rem;color:var(--cream);line-height:1.3;}
 .rec-days{font-size:0.72rem;font-weight:700;color:var(--pink);letter-spacing:0.06em;text-transform:uppercase;line-height:1.2;}
 /* Recipe list (fallback) */
 .rec-list{display:flex;flex-direction:column;gap:10px;}
@@ -71,7 +71,7 @@ body{background:var(--bg);font-family:'Heading',Arial,sans-serif;color:var(--cre
 .rec-row-arrow{width:52px;display:flex;align-items:center;justify-content:center;background:var(--pink);color:var(--ink);flex-shrink:0;}
 /* Detail */
 .det-card{background:var(--card);border:var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px;}
-.det-title{font-family:'Ohno',Georgia,serif;font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:8px;}
+.det-title{font-family:'Ohno',Georgia,serif;font-size:2rem;margin-bottom:8px;}
 .det-badge{display:inline-block;border:1px solid #08715A;border-radius:999px;padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
 .det-meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--divider);margin-bottom:14px;}
 .det-meta svg{width:16px;height:16px;flex-shrink:0;}
@@ -104,11 +104,11 @@ body{background:var(--bg);font-family:'Heading',Arial,sans-serif;color:var(--cre
 .glass-overlay{display:none;}
 /* Estoque grid */
 /* Estoque accordion */
-.est-cats{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.5vw,14px);}
+.est-cats{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .est-cat{background:var(--card);border:1.5px solid #087A64;border-radius:24px;overflow:hidden;transition:border-color .2s;}
 .est-cat.open{border-color:var(--pink);}
-.est-cat-head{padding:clamp(16px,2.5vw,28px) clamp(14px,2vw,24px);min-height:clamp(80px,12vw,120px);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;}
-.est-cat-title{font-family:'Ohno',Georgia,serif;font-size:clamp(1.8rem,4vw,2.4rem);color:var(--cream);line-height:1;text-align:center;}
+.est-cat-head{padding:24px 20px;min-height:100px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;}
+.est-cat-title{font-family:'Ohno',Georgia,serif;font-size:2.2rem;color:var(--cream);line-height:1;text-align:center;}
 .est-cat.open .est-cat-title{color:var(--pink);}
 .est-cat-body{display:none;padding:0 18px 16px;}
 .est-cat.open .est-cat-body{display:block;}
@@ -169,34 +169,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   ::view-transition-new(root){animation:vt-fi 120ms ease both!important}
 }
 
-/* ── Responsive ─────────────────────────────────────────────────── */
-@media(max-width:600px){
-  .page{padding:14px 12px 36px;}
-  .mod-cards{grid-template-columns:1fr;gap:14px;}
-  .rec-grid{grid-template-columns:1fr;gap:12px;}
-  .est-cats{grid-template-columns:1fr;}
-  .est-cat-head{min-height:72px;padding:20px 18px;}
-  .mod-card{min-height:clamp(140px,35vw,200px);}
-  .date-pill{font-size:11px;padding:5px 10px;}
-  .home-header{gap:12px;margin-bottom:20px;}
-  .home-wrap{min-height:auto;padding-top:16px;}
-  .page-title{font-size:clamp(1.8rem,7vw,2.4rem);}
-  .det-card,.base-card{padding:16px;}
-}
-@media(min-width:601px) and (max-width:767px){
-  .rec-grid{grid-template-columns:repeat(2,1fr);}
-  .mod-cards{grid-template-columns:1fr 1fr;}
-}
-@media(min-width:768px) and (max-width:1023px){
-  .rec-grid{grid-template-columns:repeat(2,1fr);}
-  .page{max-width:700px;}
-}
-@media(min-width:1024px){
-  .page{max-width:900px;}
-  .rec-grid{grid-template-columns:repeat(3,1fr);}
-}
-@media(min-width:1400px){
-  .page{max-width:1100px;}
+
 }
 </style>
 </head>
@@ -211,7 +184,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   </div>
   <div class="home-wrap">
     <div class="home-header">
-      <div class="mark"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+      <div class="mark"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
       <div class="home-header-text">
         <div class="page-title" style="view-transition-name:vt-prod">Produção</div>
         <div class="page-sub">Selecione uma área para continuar.</div>
@@ -245,7 +218,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Receitas</div>
         <div class="page-sub">Escolha uma receita para visualizar.</div>
@@ -261,7 +234,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Cogumelo Refogado</div>
     </div>
@@ -295,7 +268,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Carne de Panela</div>
     </div>
@@ -335,7 +308,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Falafel</div>
     </div>
@@ -375,7 +348,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Frango Grelhado</div>
     </div>
@@ -406,7 +379,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Pernil Desfiado</div>
     </div>
@@ -442,7 +415,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Mignon</div>
     </div>
@@ -475,7 +448,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Pão de Queijo</div>
     </div>
@@ -512,7 +485,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Maionese de Alho</div>
     </div>
@@ -545,7 +518,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Maionese de Tomate Seco</div>
     </div>
@@ -576,7 +549,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Maionese de Pesto</div>
     </div>
@@ -606,7 +579,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Maionese de Limão Siciliano</div>
     </div>
@@ -640,7 +613,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Maionese de Bacon</div>
     </div>
@@ -675,7 +648,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Molho de Alho</div>
     </div>
@@ -706,7 +679,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Molho Shoyu</div>
     </div>
@@ -736,7 +709,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Brigadeiro de Colher</div>
     </div>
@@ -768,7 +741,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Estoque</div>
         <div class="page-sub">Toque em uma categoria para registrar quantidades.</div>
@@ -784,7 +757,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Compras</div>
         <div class="page-sub">Itens prioritários para comprar.</div>
@@ -807,7 +780,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="Id%20Visual/SOCIAL%20MEDIA/AVATAR/1.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
     <div class="home-header-text">
       <div class="page-title">Programação</div>
         <div class="page-sub">Produção programada por dia.</div>
