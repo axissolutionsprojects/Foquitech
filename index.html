@@ -119,23 +119,25 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 </div></div>
 <script>
 // ── Auth Guard ──────────────────────────────────────────────────────────────
-(async function authGuard(){
-  try {
-    const timeout = new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000));
-    const load = import('https://esm.sh/@supabase/supabase-js@2');
-    const { createClient } = await Promise.race([load, timeout]);
-    const sb = createClient('https://dmqvxrvazwtpqzkgxhcb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtcXZ4cnZhend0cHF6a2d4aGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTI2MTMsImV4cCI6MjEwOTAyODYxM30.2O7Kqf0jPQeS7pfaZBtMV8FJf81IYoFJf1_Y5GkYS00');
-    const { data: { session } } = await sb.auth.getSession();
-    if(!session){ location.replace('login.html'); return; }
-    window._supabase = sb;
-    window._session = session;
-    document.body.style.visibility='visible';
-    const _perfil = session.user.user_metadata?.perfil || session.user.app_metadata?.perfil;
-    if(_perfil === 'admin'){
-      const adminBtn = document.getElementById('admin-link');
-      if(adminBtn) adminBtn.style.display = 'flex';
-    }
-  } catch(e){ location.replace('login.html'); }
+(function(){
+  // Checagem rápida: sem token local = vai para login imediatamente
+  var hasToken = Object.keys(localStorage).some(function(k){ return k.startsWith('sb-') && k.endsWith('auth-token'); });
+  if(!hasToken){ location.replace('login.html'); return; }
+  // Token existe: carrega Supabase em background para validar
+  import('https://esm.sh/@supabase/supabase-js@2').then(function(m){
+    var sb = m.createClient('https://dmqvxrvazwtpqzkgxhcb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtcXZ4cnZhend0cHF6a2d4aGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTI2MTMsImV4cCI6MjEwOTAyODYxM30.2O7Kqf0jPQeS7pfaZBtMV8FJf81IYoFJf1_Y5GkYS00');
+    sb.auth.getSession().then(function(r){
+      var session = r.data && r.data.session;
+      if(!session){ location.replace('login.html'); return; }
+      window._supabase = sb;
+      window._session = session;
+      var perfil = session.user.user_metadata && session.user.user_metadata.perfil || session.user.app_metadata && session.user.app_metadata.perfil;
+      if(perfil === 'admin'){
+        var adminBtn = document.getElementById('admin-link');
+        if(adminBtn) adminBtn.style.display = 'flex';
+      }
+    });
+  });
 })();
 // ── /Auth Guard ──────────────────────────────────────────────────────────────
 
@@ -162,17 +164,9 @@ setInterval(tickClock,60000);
 })();
 
 function doLogout(){
-  Object.keys(localStorage).forEach(k=>{ if(k.startsWith('sb-')) localStorage.removeItem(k); });
+  Object.keys(localStorage).forEach(function(k){ if(k.startsWith('sb-')) localStorage.removeItem(k); });
   sessionStorage.clear();
-  // timeout garante redirect mesmo se signOut() travar
-  const go = ()=>location.replace('login.html');
-  setTimeout(go, 1500);
-  if(window._supabase){ window._supabase.auth.signOut().finally(go); }
-  else { go(); }
-});
-  sessionStorage.clear();
-  if(window._supabase) window._supabase.auth.signOut().finally(()=>location.replace('login.html'));
-  else location.replace('login.html');
+  location.replace('login.html');
 }
 
 function goBack(url){sessionStorage.setItem('vt-back','1');location.href=url;}
