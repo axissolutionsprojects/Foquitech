@@ -190,15 +190,27 @@ body{background:var(--bg);color:var(--cream);font-family:'HPT',system-ui,sans-se
 .topbar-title{font-family:'Ohno',Georgia,serif;font-size:1.3rem;color:var(--cream);}
 .btn-logout{background:none;border:none;cursor:pointer;color:var(--cream);opacity:.7;padding:6px;display:flex;align-items:center;}
 
-/* ── Nav ── */
-.nav{position:fixed;top:56px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto;white-space:nowrap;z-index:99;scrollbar-width:none;}
-.nav::-webkit-scrollbar{display:none;}
-.nav-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:none;border:none;color:var(--muted);cursor:pointer;font-family:'HPT',system-ui,sans-serif;font-size:14px;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;}
-.nav-btn.active{color:var(--cream);border-bottom-color:var(--pink);}
-.nav-btn:hover{color:var(--cream);}
+/* ── Sidebar ── */
+.sidebar{position:fixed;top:0;left:0;height:100vh;width:220px;background:var(--card);border-right:1px solid var(--border);z-index:200;
+  display:flex;flex-direction:column;padding:70px 0 24px;
+  transform:translateX(-220px);transition:transform .25s cubic-bezier(.4,0,.2,1);}
+.sidebar.open{transform:translateX(0);}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:12px 20px;cursor:pointer;color:var(--muted);font-family:'HPT',system-ui,sans-serif;font-size:15px;border:none;background:none;width:100%;text-align:left;transition:color .15s,background .15s;}
+.sidebar-item:hover{color:var(--cream);background:rgba(255,255,255,.05);}
+.sidebar-item.active{color:var(--cream);background:rgba(242,142,170,.12);border-right:3px solid var(--pink);}
+.sidebar-trigger{position:fixed;top:0;left:0;width:20px;height:100vh;z-index:199;}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:198;background:rgba(0,0,0,.4);}
+.sidebar-overlay.show{display:block;}
+/* hamburger — visible on mobile only */
+.btn-hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--cream);padding:6px;flex-direction:column;gap:5px;align-items:center;justify-content:center;}
+.btn-hamburger span{display:block;width:22px;height:2px;background:var(--cream);border-radius:2px;transition:all .2s;}
+@media(max-width:767px){
+  .btn-hamburger{display:flex;}
+  .sidebar-trigger{display:none;}
+}
 
 /* ── Content ── */
-.content{padding:120px 16px 40px;max-width:1100px;margin:0 auto;}
+.content{padding:72px 16px 40px;max-width:1100px;margin:0 auto;}
 
 /* ── Cards de métrica ── */
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
@@ -288,23 +300,28 @@ input[type=date]{padding:7px 12px;border-radius:20px;border:1px solid var(--bord
 <!-- Topbar -->
 <div class="topbar">
   <div class="topbar-left">
+    <button class="btn-hamburger" id="btn-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="mark"><img src="assets/avatar.png" alt="Foqui"></div>
     <span class="topbar-title">FoquiTech Admin</span>
   </div>
-  <button class="btn-logout" onclick="doLogout()" title="Sair">
+  <button class="btn-logout" id="btn-logout" title="Sair">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
   </button>
 </div>
 
-<!-- Nav -->
-<nav class="nav">
-  <button class="nav-btn active" onclick="showTab('dashboard',this)">📊 Dashboard</button>
-  <button class="nav-btn" onclick="showTab('relatorios',this)">📋 Relatórios</button>
-  <button class="nav-btn" onclick="showTab('receitas',this)">🍞 Receitas</button>
-  <button class="nav-btn" onclick="showTab('programacao',this)">📅 Programação</button>
-  <button class="nav-btn" onclick="showTab('estoque',this)">📦 Estoque</button>
-  <button class="nav-btn" onclick="showTab('usuarios',this)">👥 Usuários</button>
-  <button class="nav-btn" onclick="showTab('config',this)">⚙️ Config</button>
+<!-- Sidebar -->
+<div class="sidebar-trigger" id="sidebar-trigger"></div>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<nav class="sidebar" id="sidebar">
+  <button class="sidebar-item active" data-tab="dashboard">📊 Dashboard</button>
+  <button class="sidebar-item" data-tab="relatorios">📋 Relatórios</button>
+  <button class="sidebar-item" data-tab="receitas">🍞 Receitas</button>
+  <button class="sidebar-item" data-tab="programacao">📅 Programação</button>
+  <button class="sidebar-item" data-tab="estoque">📦 Estoque</button>
+  <button class="sidebar-item" data-tab="usuarios">👥 Usuários</button>
+  <button class="sidebar-item" data-tab="config">⚙️ Config</button>
 </nav>
 
 <div class="content">
@@ -459,22 +476,41 @@ if(!session){ location.replace('login.html'); throw ''; }
 window._supabase = sb;
 window._session = session;
 
-// ── Logout ────────────────────────────────────────────────────
-window.doLogout = async function(){
-  await sb.auth.signOut();
-  location.replace('login.html');
-};
+// ── Sidebar wiring ────────────────────────────────────────────
+const sidebar   = document.getElementById('sidebar');
+const overlay   = document.getElementById('sidebar-overlay');
+const trigger   = document.getElementById('sidebar-trigger');
+const hamburger = document.getElementById('btn-hamburger');
+
+function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
+function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+
+// Desktop: hover near left edge
+trigger.addEventListener('mouseenter', openSidebar);
+sidebar.addEventListener('mouseleave', closeSidebar);
+overlay.addEventListener('click', closeSidebar);
+hamburger.addEventListener('click', ()=> sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
 
 // ── Tab navigation ────────────────────────────────────────────
-window.showTab = function(name, btn){
+function showTab(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  btn.classList.add('active');
+  document.querySelector(`.sidebar-item[data-tab="${name}"]`).classList.add('active');
+  closeSidebar();
   if(name==='relatorios') loadRelatorio();
   if(name==='estoque') loadEstoque();
   if(name==='usuarios') loadUsuarios();
-};
+}
+
+document.querySelectorAll('.sidebar-item').forEach(btn=>{
+  btn.addEventListener('click', ()=> showTab(btn.dataset.tab));
+});
+
+document.getElementById('btn-logout').addEventListener('click', async()=>{
+  await sb.auth.signOut();
+  location.replace('login.html');
+});
 
 // ── DASHBOARD — Charts ────────────────────────────────────────
 const TOP_VENDAS = [
@@ -705,7 +741,7 @@ window.criarUsuario = async function(){
     const r=await fetch('/api/create-user',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email:user+'@foquitech.internal',password:senha,nome,perfil})
+      body:JSON.stringify({email:user+'@foquitech.app',password:senha,nome,perfil})
     });
     const d=await r.json();
     if(!r.ok) throw new Error(d.message||d.error||'Erro ao criar usuário');

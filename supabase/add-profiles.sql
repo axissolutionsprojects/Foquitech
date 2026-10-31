@@ -43,7 +43,7 @@ select
   coalesce(raw_user_meta_data->>'nome', split_part(email,'@',1)),
   coalesce(raw_app_meta_data->>'perfil', raw_user_meta_data->>'perfil', 'operador')
 from auth.users
-where email like '%@foquitech.internal'
+where email like '%@foquitech.app'
 on conflict (id) do nothing;
 
 select * from profiles;
