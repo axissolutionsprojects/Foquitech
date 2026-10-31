@@ -103,7 +103,8 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 
 
 }
-</style></head>
+</style><style>body{visibility:hidden}</style>
+</head>
 <body><div class="wrap">
 <div class="topbar"><div style="display:flex;align-items:center;gap:14px;"><a href="index.html" title="Ir para Home" style="display:block;width:54px;height:54px;flex-shrink:0;border-radius:16px;overflow:hidden;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;object-fit:cover;display:block;"></a><span style="font-family:'Ohno',Georgia,serif;font-size:2.2rem;color:var(--color-cream);line-height:1;">Home</span></div><div class="date-pill">—</div><a id="admin-link" href="admin.html" style="display:none;align-items:center;gap:6px;color:#FFF3D8;opacity:.7;text-decoration:none;padding:6px 8px;font-size:13px;font-family:'HPT',system-ui,sans-serif;">⚙ Admin</a><button onclick="doLogout()" style="background:none;border:none;cursor:pointer;color:#FFF3D8;opacity:.7;padding:6px;display:flex;align-items:center;flex-shrink:0;" title="Sair"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div>
 <div class="hero-stack">
@@ -128,6 +129,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     if(!session){ location.replace('login.html'); return; }
     window._supabase = sb;
     window._session = session;
+    document.body.style.visibility='visible';
     const _perfil = session.user.user_metadata?.perfil || session.user.app_metadata?.perfil;
     if(_perfil === 'admin'){
       const adminBtn = document.getElementById('admin-link');

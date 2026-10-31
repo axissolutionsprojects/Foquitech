@@ -173,6 +173,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
   .mini-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
+<style>body{visibility:hidden}</style>
 </head>
 <body>
 
@@ -227,7 +228,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
     <div class="metric-card" onclick="showDetail('combos')">
       <div class="metric-label">Combos</div>
       <div class="metric-value">289</div>
-      <div class="metric-sub">= 289 brigadeiros</div>
+      <div class="metric-sub">= 367 brigadeiros</div>
     </div>
     <div class="metric-card" onclick="showDetail('topseller')">
       <div class="metric-label">Top Seller</div>
@@ -303,7 +304,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
   </div>
   <div class="mini-grid" style="grid-template-columns:repeat(3,1fr)">
     <div class="mini-card"><div class="mini-label">Total Combos</div><div class="mini-value" id="combo-total">289</div></div>
-    <div class="mini-card"><div class="mini-label">Brigadeiros</div><div class="mini-value" id="combo-brig">289</div></div>
+    <div class="mini-card"><div class="mini-label">Brigadeiros</div><div class="mini-value" id="combo-brig">367</div></div>
     <div class="mini-card"><div class="mini-label">Batata Chips</div><div class="mini-value" id="combo-chips">289</div></div>
   </div>
   <div class="chart-card">
@@ -437,6 +438,7 @@ const perfil = session.user.user_metadata?.perfil || session.user.app_metadata?.
 if(perfil !== 'admin'){ location.replace('index.html'); throw new Error('not admin'); }
 window._supabase = sb;
 window._session = session;
+    document.body.style.visibility='visible';
 
 // Nome do usuário na topbar
 document.getElementById('topbar-user').textContent = session.user.user_metadata?.nome || session.user.email?.split('@')[0] || '';
@@ -648,7 +650,7 @@ function renderSanduiches(m) {
 function renderCombos(m) {
   const total = Math.round(289*m);
   document.getElementById('combo-total').textContent = total;
-  document.getElementById('combo-brig').textContent = total;
+  document.getElementById('combo-brig').textContent = Math.round((289+78)*m); // 289 combos + 78 avulsos = 367
   document.getElementById('combo-chips').textContent = total;
   mkChart('chart-combos-pizza', {
     type:'doughnut',

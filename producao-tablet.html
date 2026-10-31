@@ -172,6 +172,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 
 }
 </style>
+<style>body{visibility:hidden}</style>
 </head>
 <body>
 <div class="page">
@@ -805,6 +806,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     if(!session){ location.replace('login.html'); return; }
     window._supabase = sb;
     window._session = session;
+    document.body.style.visibility='visible';
     const _perfil = session.user.user_metadata?.perfil || session.user.app_metadata?.perfil;
     if(_perfil === 'admin'){
       const adminBtn = document.getElementById('admin-link');
