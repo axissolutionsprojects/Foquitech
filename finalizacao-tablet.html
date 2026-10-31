@@ -200,7 +200,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   </div>
   <div class="home-wrap">
     <div class="home-header">
-      <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+      <a href="index.html" title="Ir para Home" style="display:block;width:54px;height:54px;flex-shrink:0;border-radius:16px;overflow:hidden;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;object-fit:cover;display:block;"></a>
       <div class="home-header-text">
         <div class="page-title ohno" style="view-transition-name:vt-fin">Finalização</div>
         <div class="page-sub">Selecione uma área para continuar.</div>
@@ -231,7 +231,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <a href="index.html" title="Ir para Home" style="display:block;width:54px;height:54px;flex-shrink:0;border-radius:16px;overflow:hidden;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;object-fit:cover;display:block;"></a>
     <div class="home-header-text">
       <div class="page-title ohno">Checklist</div>
       <div class="page-sub">Abertura e montagem.</div>
@@ -250,7 +250,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <a href="index.html" title="Ir para Home" style="display:block;width:54px;height:54px;flex-shrink:0;border-radius:16px;overflow:hidden;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;object-fit:cover;display:block;"></a>
     <div class="home-header-text">
       <div class="page-title ohno">Contagem</div>
       <div class="page-sub">Disponível, meta e a fazer.</div>
@@ -268,7 +268,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
     <div class="date-pill live-date"></div>
   </div>
   <div class="home-header">
-    <div class="mark" style="width:54px;height:54px;flex-shrink:0;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;"></div>
+    <a href="index.html" title="Ir para Home" style="display:block;width:54px;height:54px;flex-shrink:0;border-radius:16px;overflow:hidden;"><img src="assets/avatar.png" alt="Foqui" style="width:100%;height:100%;object-fit:cover;display:block;"></a>
     <div class="home-header-text">
       <div class="page-title ohno">Estoque</div>
       <div class="page-sub">Insumos de finalização.</div>
@@ -343,8 +343,14 @@ document.querySelectorAll('.ct-row .ct-inp').forEach(ctCalc);
 function goBack(url){sessionStorage.setItem('vt-back','1');location.href=url;}
 
 function doLogout(){
-  // Limpa todas as chaves de sessão do Supabase e redireciona
-  Object.keys(localStorage).forEach(k => { if(k.startsWith('sb-')) localStorage.removeItem(k); });
+  Object.keys(localStorage).forEach(k=>{ if(k.startsWith('sb-')) localStorage.removeItem(k); });
+  sessionStorage.clear();
+  // timeout garante redirect mesmo se signOut() travar
+  const go = ()=>location.replace('login.html');
+  setTimeout(go, 1500);
+  if(window._supabase){ window._supabase.auth.signOut().finally(go); }
+  else { go(); }
+});
   sessionStorage.clear();
   if(window._supabase) window._supabase.auth.signOut().finally(()=>location.replace('login.html'));
   else location.replace('login.html');
