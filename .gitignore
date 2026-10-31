@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.local
+.env.production
+capture_telas.mjs
+package-lock.json
+package.json
