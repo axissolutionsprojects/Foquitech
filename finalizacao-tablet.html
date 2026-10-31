@@ -285,6 +285,14 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 </div>
 <script>
 function selMod(btn,id){document.querySelectorAll('.mod-card').forEach(b=>b.setAttribute('aria-pressed','false'));btn.setAttribute('aria-pressed','true');setTimeout(()=>go(id),160);}
+async function logAction(acao, detalhes={}){
+  if(!window._supabase||!window._session)return;
+  try{await window._supabase.from('audit_logs').insert({
+    usuario_id:window._session.user.id,
+    usuario_email:window._session.user.email,
+    acao, detalhes, criado_em:new Date().toISOString()
+  });}catch(e){}
+}
 function go(id){
   const isBack=id==='f-home';
   isBack?document.documentElement.setAttribute('data-vt-back',''):document.documentElement.removeAttribute('data-vt-back');

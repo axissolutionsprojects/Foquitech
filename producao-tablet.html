@@ -793,6 +793,17 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 
 </div>
 <script>
+// ── Auth Guard ──────────────────────────────────────────────────────────────
+(async function authGuard(){
+  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+  const sb = createClient('https://dmqvxrvazwtpqzkgxhcb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtcXZ4cnZhend0cHF6a2d4aGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTI2MTMsImV4cCI6MjEwOTAyODYxM30.2O7Kqf0jPQeS7pfaZBtMV8FJf81IYoFJf1_Y5GkYS00');
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ location.replace('login.html'); return; }
+  window._supabase = sb;
+  window._session = session;
+})();
+// ── /Auth Guard ──────────────────────────────────────────────────────────────
+
 function tickClock(){
   const DIAS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
   const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -815,9 +826,18 @@ function go(id){
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     el.classList.add('active');window.scrollTo(0,0);
     if(id==='v-calendario')buildCal();
+    logAction('navegacao',{tela:id});
   }
   if(!document.startViewTransition){doSwap();return;}
   document.startViewTransition(doSwap);
+}
+async function logAction(acao, detalhes={}){
+  if(!window._supabase||!window._session)return;
+  try{await window._supabase.from('audit_logs').insert({
+    usuario_id:window._session.user.id,
+    usuario_email:window._session.user.email,
+    acao, detalhes, criado_em:new Date().toISOString()
+  });}catch(e){}
 }
 function selMod(btn,id){document.querySelectorAll('.mod-card').forEach(b=>b.setAttribute('aria-pressed','false'));btn.setAttribute('aria-pressed','true');setTimeout(()=>go(id),160);}
 function selRec(btn,id){document.querySelectorAll('.rec-card').forEach(b=>b.setAttribute('aria-pressed','false'));btn.setAttribute('aria-pressed','true');setTimeout(()=>go(id),160);}
@@ -941,7 +961,7 @@ function toggleEstCat(id){
 function updateEst(id, val, catId, inputEl){
   const d = loadEst();
   d[id] = parseFloat(val||0);
-  saveEst(d);
+  saveEst(d);logAction('estoque_atualizado',{item:id,valor:parseFloat(val||0)});
   // re-render só o header da categoria para não perder foco
   const cat = EST_DATA.find(c=>c.id===catId);
   if(!cat) return;
@@ -991,7 +1011,7 @@ function recalc(detailId){
 }
 let _calFrom = null;
 function calAbreReceita(vid){_calFrom=document.querySelector('.view.active')?.id||null;go(vid);}
-function salvar(btn){const o=btn.textContent;if(btn._t)return;btn.textContent='Salvo \u2713';btn.classList.add('saved');btn._t=setTimeout(()=>{btn.textContent=o;btn.classList.remove('saved');btn._t=null;if(_calFrom){go(_calFrom);_calFrom=null;}},1500);}
+function salvar(btn){const o=btn.textContent;if(btn._t)return;btn.textContent='Salvo \u2713';btn.classList.add('saved');logAction('receita_salva',{receita:document.querySelector('.view.active .page-title')?.textContent||''});btn._t=setTimeout(()=>{btn.textContent=o;btn.classList.remove('saved');btn._t=null;if(_calFrom){go(_calFrom);_calFrom=null;}},1500);}
 
 // \u2500\u2500 Calend\u00e1rio di\u00e1rio \u2500\u2500
 const CAL_DATA = {
