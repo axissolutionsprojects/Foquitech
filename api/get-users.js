@@ -1,0 +1,23 @@
+module.exports = async function handler(req, res) {
+  if (req.method !== 'GET') return res.status(405).end();
+
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;
+
+  if (!SERVICE_KEY || !SUPABASE_URL) {
+    return res.status(500).json({ error: 'Variáveis não configuradas' });
+  }
+
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*&order=criado_em.desc.nullslast`, {
+      headers: {
+        'apikey': SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`
+      }
+    });
+    const data = await r.json();
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+};

@@ -1090,8 +1090,9 @@ window.loadUsuarios = async function() {
   const tbody = document.getElementById('tbl-users');
   tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Carregando...</td></tr>';
   try {
-    const {data, error} = await sb.rpc('get_all_profiles');
-    if(error) throw new Error(error.message);
+    const resp = await fetch('/api/get-users');
+    if(!resp.ok) throw new Error('Erro ao buscar usuários');
+    const data = await resp.json();
     if(!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Nenhum usuário</td></tr>'; return; }
     tbody.innerHTML = data.map(u=>`
       <tr>
