@@ -238,13 +238,13 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
       <div class="page-sub">Abertura e montagem.</div>
     </div>
   </div>
-<div class="chk done" onclick="this.classList.toggle('done')"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Higienizar bancada de montagem</span></div>
-<div class="chk done" onclick="this.classList.toggle('done')"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Separar pães artesanais</span></div>
-<div class="chk done" onclick="this.classList.toggle('done')"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Conferir temperatura das geladeiras</span></div>
-<div class="chk" onclick="this.classList.toggle('done')"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Repor molho de alho na linha</span></div>
-<div class="chk" onclick="this.classList.toggle('done')"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Montar vitrine de lanches</span></div>
-<div class="chk" onclick="this.classList.toggle('done')"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Etiquetar pedidos de entrega</span></div>
-<div class="chk" onclick="this.classList.toggle('done')"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Registrar contagem final do dia</span></div></div>
+<div class="chk done" onclick="toggleChk(this)"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Higienizar bancada de montagem</span></div>
+<div class="chk done" onclick="toggleChk(this)"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Separar pães artesanais</span></div>
+<div class="chk done" onclick="toggleChk(this)"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Conferir temperatura das geladeiras</span></div>
+<div class="chk" onclick="toggleChk(this)"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Repor molho de alho na linha</span></div>
+<div class="chk" onclick="toggleChk(this)"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Montar vitrine de lanches</span></div>
+<div class="chk" onclick="toggleChk(this)"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Etiquetar pedidos de entrega</span></div>
+<div class="chk" onclick="toggleChk(this)"><span class="box"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><span class="lbl">Registrar contagem final do dia</span></div></div>
 <div class="view" id="f-contagem">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
     <button class="back-row" onclick="go('f-home')" style="margin-bottom:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
@@ -292,7 +292,7 @@ async function logAction(acao, detalhes={}){
   try{await window._supabase.from('audit_logs').insert({
     usuario_id:window._session.user.id,
     usuario_email:window._session.user.email,
-    acao, detalhes, criado_em:new Date().toISOString()
+    acao, detalhes:Object.assign({painel:'finalizacao'},detalhes), criado_em:new Date().toISOString()
   });}catch(e){}
 }
 function go(id){
@@ -302,9 +302,14 @@ function go(id){
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     const el=document.getElementById(id);
     if(el){el.classList.add('active');window.scrollTo(0,0);}
+    logAction('navegacao',{tela:id});
   }
   if(!document.startViewTransition){doSwap();return;}
   document.startViewTransition(doSwap);
+}
+function toggleChk(el){
+  el.classList.toggle('done');
+  logAction('checklist',{item:el.querySelector('.lbl').textContent,status:el.classList.contains('done')?'concluido':'pendente'});
 }
 function tickClock(){
   const DIAS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];

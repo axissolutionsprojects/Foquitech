@@ -364,15 +364,26 @@ tr:hover td{background:rgba(255,255,255,.03);}
     <input type="date" id="rel-from" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
     <input type="date" id="rel-to" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
     <select id="rel-tipo" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
-      <option value="">Todos</option><option value="navegacao">Navegação</option><option value="receita_salva">Receitas</option><option value="estoque_atualizado">Estoque</option>
+      <option value="">Todos</option><option value="login">Login</option><option value="navegacao">Navegação</option><option value="receita_salva">Receitas</option><option value="estoque_atualizado">Estoque</option><option value="checklist">Checklist</option>
     </select>
-    <button onclick="loadRelatorios()" style="background:var(--rosa);border:none;border-radius:10px;padding:9px 18px;color:var(--ink);font-family:'Ohno',Georgia,serif;cursor:pointer;">Filtrar</button>
-    <button onclick="exportCSV()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:9px 18px;color:var(--muted);font-family:'Ohno',Georgia,serif;cursor:pointer;">↓ CSV</button>
+    <button type="button" onclick="loadRelatorios()" style="background:var(--rosa);border:none;border-radius:10px;padding:9px 18px;color:var(--ink);font-family:'Ohno',Georgia,serif;cursor:pointer;">Filtrar</button>
+    <button type="button" onclick="exportCSV()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:9px 18px;color:var(--muted);font-family:'Ohno',Georgia,serif;cursor:pointer;">↓ CSV</button>
   </div>
+
+  <!-- Logs de acesso -->
   <div class="chart-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-family:'Ohno',Georgia,serif;font-size:1.05rem;color:var(--cream);">Logs de Acesso e Modificações</div>
+      <span style="font-size:11px;color:var(--muted)" id="logs-count"></span>
+    </div>
     <div class="tbl-wrap">
-      <table><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Detalhes</th></tr></thead>
+      <table><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Painel</th><th>Ação</th><th>Detalhes</th></tr></thead>
       <tbody id="tbl-logs"></tbody></table>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px;align-items:center;" id="logs-actions">
+      <button type="button" id="btn-ver-mais" onclick="logsVerMais()" style="display:none;background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 16px;color:var(--cream);font-family:'Ohno',Georgia,serif;font-size:13px;cursor:pointer;">Ver mais</button>
+      <button type="button" id="btn-ver-menos" onclick="logsVerMenos()" style="display:none;background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 16px;color:var(--muted);font-family:'Ohno',Georgia,serif;font-size:13px;cursor:pointer;">Ver menos</button>
+      <button type="button" onclick="exportCSV()" style="margin-left:auto;background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 16px;color:var(--muted);font-family:'Ohno',Georgia,serif;font-size:13px;cursor:pointer;">↓ Exportar CSV</button>
     </div>
   </div>
 </div>
@@ -708,38 +719,55 @@ function renderTopSeller(m) {
 }
 
 // ── Relatórios ─────────────────────────────────────────────────
+var _logsVisible = 4;
+var _logsData = [];
+
+function renderLogs(){
+  const tbody = document.getElementById('tbl-logs');
+  const slice = _logsData.slice(0, _logsVisible);
+  const ACOES = {login:'Login',navegacao:'Navegação',receita_salva:'Receita salva',estoque_atualizado:'Estoque',checklist:'Checklist'};
+  tbody.innerHTML = slice.map(l=>{
+    const d = l.detalhes||{};
+    const painel = d.painel || (l.acao==='login'?'—':'producao');
+    const det = d.tela||d.item||d.receita||d.status||'';
+    return `<tr>
+      <td style="white-space:nowrap;font-size:12px">${new Date(l.criado_em).toLocaleString('pt-BR')}</td>
+      <td>${l.usuario_email?.split('@')[0]||'—'}</td>
+      <td><span style="font-size:11px;color:var(--muted)">${painel}</span></td>
+      <td><span class="badge badge-op" style="font-size:11px">${ACOES[l.acao]||l.acao}</span></td>
+      <td style="color:var(--muted);font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${det}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhum log ainda</td></tr>';
+  const count = document.getElementById('logs-count');
+  if(count) count.textContent = _logsData.length + ' registros';
+  const btnMais = document.getElementById('btn-ver-mais');
+  const btnMenos = document.getElementById('btn-ver-menos');
+  if(btnMais) btnMais.style.display = _logsVisible < _logsData.length ? '' : 'none';
+  if(btnMenos) btnMenos.style.display = _logsVisible > 4 ? '' : 'none';
+}
+
+window.logsVerMais = function(){ _logsVisible = Math.min(_logsVisible+4, _logsData.length); renderLogs(); };
+window.logsVerMenos = function(){ _logsVisible = 4; renderLogs(); };
+
 window.loadRelatorios = async function() {
   const tbody = document.getElementById('tbl-logs');
-  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Carregando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted)">Carregando...</td></tr>';
   try {
     const tipo = document.getElementById('rel-tipo').value;
-    let q = sb.from('audit_logs').select('*').order('criado_em',{ascending:false}).limit(100);
+    let q = sb.from('audit_logs').select('*').order('criado_em',{ascending:false}).limit(200);
     if(tipo) q = q.eq('acao', tipo);
     const from = document.getElementById('rel-from').value;
     const to = document.getElementById('rel-to').value;
     if(from) q = q.gte('criado_em', from);
     if(to) q = q.lte('criado_em', to + 'T23:59:59');
-    const {data} = await q;
-    if(!data?.length) { renderLogsSimulados(tbody); return; }
-    tbody.innerHTML = data.map(l=>`
-      <tr><td style="white-space:nowrap">${new Date(l.criado_em).toLocaleString('pt-BR')}</td>
-      <td>${l.usuario_email?.split('@')[0]||'—'}</td>
-      <td><span class="badge badge-op">${l.acao}</span></td>
-      <td style="color:var(--muted);font-size:12px">${JSON.stringify(l.detalhes||{})}</td></tr>
-    `).join('');
+    const {data, error} = await q;
+    if(error || !data?.length){ tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhum log ainda — os acessos dos operadores aparecerão aqui</td></tr>'; return; }
+    _logsData = data;
+    _logsVisible = 4;
     window._logsData = data;
-  } catch(e) { renderLogsSimulados(tbody); }
+    renderLogs();
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--rosa)">Erro ao carregar</td></tr>'; }
 };
-
-function renderLogsSimulados(tbody) {
-  const sim = [
-    {t:'31/10/2026 14:22',u:'adm01',a:'navegacao',d:'dashboard'},
-    {t:'31/10/2026 14:18',u:'operador01',a:'receita_salva',d:'Frango Grelhado'},
-    {t:'31/10/2026 13:45',u:'operador01',a:'estoque_atualizado',d:'Frango Grelhado: 4.5kg'},
-    {t:'31/10/2026 13:30',u:'operador02',a:'navegacao',d:'finalizacao'},
-  ];
-  tbody.innerHTML = sim.map(l=>`<tr><td>${l.t}</td><td>${l.u}</td><td><span class="badge badge-op">${l.a}</span></td><td style="color:var(--muted);font-size:12px">${l.d}</td></tr>`).join('');
-}
 
 // ── Upload de relatório ──────────────────────────────────────
 var _uploads = JSON.parse(localStorage.getItem('foqui_uploads')||'[]');

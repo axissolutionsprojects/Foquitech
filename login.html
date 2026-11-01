@@ -85,6 +85,7 @@ async function login() {
     btn.disabled = false;
     btn.textContent = 'Entrar';
   } else {
+    try{ await sb.from('audit_logs').insert({usuario_email:email,acao:'login',detalhes:{},criado_em:new Date().toISOString()}); }catch(e){}
     location.href = 'index.html';
   }
 }
