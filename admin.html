@@ -435,6 +435,47 @@ tr:hover td{background:rgba(255,255,255,.03);}
   </div>
 </div>
 
+<!-- ══ MODAL EDITAR USUÁRIO ══ -->
+<div id="modal-user" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;width:520px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0;">
+      <div>
+        <div id="mu-title" style="font-family:'Ohno',Georgia,serif;font-size:18px;color:var(--cream)"></div>
+        <div id="mu-sub" style="font-size:12px;color:var(--muted);margin-top:2px"></div>
+      </div>
+      <button type="button" onclick="closeUserModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px;">✕</button>
+    </div>
+    <div style="display:flex;gap:0;padding:16px 24px 0;border-bottom:1px solid var(--border);margin-top:12px;">
+      <button type="button" id="mu-tab-dados" onclick="muTab('dados')" style="background:none;border:none;border-bottom:2px solid var(--rosa);padding:8px 16px;color:var(--cream);font-family:'Ohno',Georgia,serif;font-size:13px;cursor:pointer;margin-bottom:-1px;">Dados</button>
+      <button type="button" id="mu-tab-logs" onclick="muTab('logs')" style="background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;color:var(--muted);font-family:'Ohno',Georgia,serif;font-size:13px;cursor:pointer;margin-bottom:-1px;">Logs de atividade</button>
+    </div>
+    <div style="overflow-y:auto;padding:20px 24px;flex:1;">
+      <!-- Aba Dados -->
+      <div id="mu-pane-dados">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div class="field"><label>Nome completo</label><input type="text" id="mu-nome" style="width:100%;box-sizing:border-box;"></div>
+          <div class="field"><label>Usuário</label><input type="text" id="mu-user" disabled style="width:100%;box-sizing:border-box;opacity:.5;cursor:not-allowed;"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+          <div class="field"><label>Perfil</label>
+            <select id="mu-perfil" style="width:100%;box-sizing:border-box;">
+              <option value="operador">Operador</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field"><label>Nova senha <span style="color:var(--muted);font-size:11px">(deixe em branco para manter)</span></label><input type="password" id="mu-senha" placeholder="Mín. 6 caracteres" style="width:100%;box-sizing:border-box;"></div>
+        </div>
+        <button type="button" onclick="salvarUsuario()" style="background:var(--rosa);border:none;border-radius:12px;padding:10px 24px;color:var(--ink);font-family:'Ohno',Georgia,serif;font-size:14px;cursor:pointer;">Salvar alterações</button>
+        <span id="mu-msg" style="margin-left:14px;font-size:13px;"></span>
+      </div>
+      <!-- Aba Logs -->
+      <div id="mu-pane-logs" style="display:none;">
+        <div id="mu-logs-body" style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">Carregando...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ CONFIGURAÇÕES ══ -->
 <div class="tab-content" id="tab-config">
   <div class="page-header"><h1 class="page-title">Configurações</h1></div>
@@ -1095,7 +1136,7 @@ window.loadUsuarios = async function() {
     if(!resp.ok) throw new Error(data.error || 'Erro ao buscar usuários');
     if(!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Nenhum usuário</td></tr>'; return; }
     tbody.innerHTML = data.map(u=>`
-      <tr>
+      <tr onclick="openUserModal(${JSON.stringify(u).replace(/"/g,'&quot;')})" style="cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
         <td>${u.nome||'—'}</td>
         <td style="color:var(--muted);font-size:12px">${u.email?.split('@')[0]||u.id?.slice(0,8)||'—'}</td>
         <td><span class="badge ${u.perfil==='admin'?'badge-admin':'badge-op'}">${u.perfil||'operador'}</span></td>
@@ -1129,6 +1170,99 @@ window.criarUsuario = async function() {
     await loadUsuarios();
   } catch(e) { msg.className='form-msg err'; msg.textContent='Erro: '+e.message; }
 };
+
+// ── Modal Editar Usuário ───────────────────────────────────────
+var _muUser = null;
+
+window.openUserModal = function(u) {
+  _muUser = u;
+  document.getElementById('mu-title').textContent = u.nome || '—';
+  document.getElementById('mu-sub').textContent = u.email || '';
+  document.getElementById('mu-nome').value = u.nome || '';
+  document.getElementById('mu-user').value = u.email?.split('@')[0] || '';
+  document.getElementById('mu-perfil').value = u.perfil || 'operador';
+  document.getElementById('mu-senha').value = '';
+  document.getElementById('mu-msg').textContent = '';
+  muTab('dados');
+  const m = document.getElementById('modal-user');
+  m.style.display = 'flex';
+};
+
+window.closeUserModal = function() {
+  document.getElementById('modal-user').style.display = 'none';
+  _muUser = null;
+};
+
+window.muTab = function(tab) {
+  document.getElementById('mu-pane-dados').style.display = tab==='dados' ? '' : 'none';
+  document.getElementById('mu-pane-logs').style.display = tab==='logs' ? '' : 'none';
+  const td = document.getElementById('mu-tab-dados');
+  const tl = document.getElementById('mu-tab-logs');
+  td.style.borderBottomColor = tab==='dados' ? 'var(--rosa)' : 'transparent';
+  td.style.color = tab==='dados' ? 'var(--cream)' : 'var(--muted)';
+  tl.style.borderBottomColor = tab==='logs' ? 'var(--rosa)' : 'transparent';
+  tl.style.color = tab==='logs' ? 'var(--cream)' : 'var(--muted)';
+  if(tab==='logs' && _muUser) loadUserLogs(_muUser.id);
+};
+
+window.salvarUsuario = async function() {
+  if(!_muUser) return;
+  const nome   = document.getElementById('mu-nome').value.trim();
+  const perfil = document.getElementById('mu-perfil').value;
+  const senha  = document.getElementById('mu-senha').value;
+  const msg    = document.getElementById('mu-msg');
+  if(!nome) { msg.style.color='var(--rosa)'; msg.textContent='Nome obrigatório.'; return; }
+  msg.style.color='var(--muted)'; msg.textContent='Salvando...';
+  try {
+    const r = await fetch('/api/update-user', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ uid: _muUser.id, nome, perfil, senha })
+    });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'Erro');
+    msg.style.color='#8BE6B2'; msg.textContent='Salvo com sucesso!';
+    _muUser = {..._muUser, nome, perfil};
+    document.getElementById('mu-title').textContent = nome;
+    await loadUsuarios();
+  } catch(e) { msg.style.color='var(--rosa)'; msg.textContent='Erro: '+e.message; }
+};
+
+async function loadUserLogs(uid) {
+  const el = document.getElementById('mu-logs-body');
+  el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">Carregando...</div>';
+  try {
+    const {data, error} = await sb.from('audit_logs')
+      .select('acao,detalhes,criado_em')
+      .eq('usuario_id', uid)
+      .order('criado_em',{ascending:false})
+      .limit(50);
+    if(error) throw new Error(error.message);
+    if(!data?.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">Nenhuma atividade registrada.</div>'; return; }
+    const ACOES_MAP = {login:'Login',navegacao:'Navegação',estoque_atualizado:'Estoque',receita_salva:'Receita',checklist:'Checklist'};
+    el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="color:var(--muted);font-size:11px;text-transform:uppercase;">
+        <th style="text-align:left;padding:6px 8px">Ação</th>
+        <th style="text-align:left;padding:6px 8px">Painel</th>
+        <th style="text-align:left;padding:6px 8px">Data</th>
+      </tr></thead>
+      <tbody>${data.map(l=>{
+        const d = l.detalhes||{};
+        const dt = new Date(l.criado_em);
+        const dtStr = dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+        return `<tr style="border-top:1px solid rgba(255,255,255,.06)">
+          <td style="padding:8px"><span class="badge badge-op" style="font-size:11px">${ACOES_MAP[l.acao]||l.acao}</span></td>
+          <td style="padding:8px;color:var(--muted)">${d.painel||'—'}</td>
+          <td style="padding:8px;color:var(--muted)">${dtStr}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  } catch(e) { el.innerHTML = `<div style="text-align:center;color:var(--rosa);padding:20px">Erro: ${e.message}</div>`; }
+}
+
+document.getElementById('modal-user').addEventListener('click', e => {
+  if(e.target.id==='modal-user') closeUserModal();
+});
+// ── /Modal Editar Usuário ──────────────────────────────────────
 
 // ── INIT ───────────────────────────────────────────────────────
 initDashboard();
