@@ -1091,8 +1091,8 @@ window.loadUsuarios = async function() {
   tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Carregando...</td></tr>';
   try {
     const resp = await fetch('/api/get-users');
-    if(!resp.ok) throw new Error('Erro ao buscar usuários');
     const data = await resp.json();
+    if(!resp.ok) throw new Error(data.error || 'Erro ao buscar usuários');
     if(!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Nenhum usuário</td></tr>'; return; }
     tbody.innerHTML = data.map(u=>`
       <tr>

@@ -9,14 +9,15 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*&order=criado_em.desc.nullslast`, {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=id,email,nome,perfil`, {
       headers: {
         'apikey': SERVICE_KEY,
         'Authorization': `Bearer ${SERVICE_KEY}`
       }
     });
     const data = await r.json();
-    return res.status(200).json(data);
+    if (!r.ok) return res.status(400).json({ error: data.message || JSON.stringify(data) });
+    return res.status(200).json(Array.isArray(data) ? data : []);
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
