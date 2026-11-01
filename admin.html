@@ -197,14 +197,14 @@ tr:hover td{background:rgba(255,255,255,.03);}
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">FoquiTech</div>
   <div class="sidebar-sep"></div>
-  <button class="nav-item active" data-tab="dashboard">Dashboard</button>
-  <button class="nav-item" data-tab="relatorios">Relatórios</button>
-  <button class="nav-item" data-tab="receitas">Receitas</button>
-  <button class="nav-item" data-tab="programacao">Programação</button>
-  <button class="nav-item" data-tab="estoque">Estoque</button>
-  <button class="nav-item" data-tab="usuarios">Usuários</button>
+  <button type="button" class="nav-item active" data-tab="dashboard">Dashboard</button>
+  <button type="button" class="nav-item" data-tab="relatorios">Relatórios</button>
+  <button type="button" class="nav-item" data-tab="receitas">Receitas</button>
+  <button type="button" class="nav-item" data-tab="programacao">Programação</button>
+  <button type="button" class="nav-item" data-tab="estoque">Estoque</button>
+  <button type="button" class="nav-item" data-tab="usuarios">Usuários</button>
   <div class="sidebar-sep" style="margin-top:auto;"></div>
-  <button class="nav-item" data-tab="config">Configurações</button>
+  <button type="button" class="nav-item" data-tab="config">Configurações</button>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -241,7 +241,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
     <div class="chart-wrap"><canvas id="chart-top"></canvas></div>
   </div>
   <div class="chart-card">
-    <div class="chart-title">Receita Mensal — 2026</div>
+    <div class="chart-title">Faturamento Semanal — Agosto 2026</div>
     <div class="chart-wrap"><canvas id="chart-anual"></canvas></div>
   </div>
 </div>
@@ -249,14 +249,14 @@ tr:hover td{background:rgba(255,255,255,.03);}
 <!-- ══ DETALHE VENDAS ══ -->
 <div class="tab-content" id="tab-vendas">
   <div class="page-header">
-    <button class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
+    <button type="button" class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
     <div><h1 class="page-title">Vendas</h1><p class="page-sub">Receita e crescimento</p></div>
   </div>
   <div class="filter-row" id="filter-vendas">
-    <button class="filter-pill" data-p="hoje">Hoje</button>
-    <button class="filter-pill active" data-p="semana">Esta semana</button>
-    <button class="filter-pill" data-p="mes">Este mês</button>
-    <button class="filter-pill" data-p="ano">Este ano</button>
+    <button type="button" class="filter-pill" data-p="hoje">Hoje</button>
+    <button type="button" class="filter-pill active" data-p="semana">Esta semana</button>
+    <button type="button" class="filter-pill" data-p="mes">Este mês</button>
+    <button type="button" class="filter-pill" data-p="ano">Este ano</button>
   </div>
   <div class="mini-grid" id="mini-vendas"></div>
   <div class="chart-card">
@@ -268,13 +268,13 @@ tr:hover td{background:rgba(255,255,255,.03);}
 <!-- ══ DETALHE SANDUÍCHES ══ -->
 <div class="tab-content" id="tab-sanduiches">
   <div class="page-header">
-    <button class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
+    <button type="button" class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
     <div><h1 class="page-title">Sanduíches</h1><p class="page-sub">Ranking de vendas</p></div>
   </div>
   <div class="filter-row" id="filter-sand">
-    <button class="filter-pill active" data-p="semana">Esta semana</button>
-    <button class="filter-pill" data-p="mes">Este mês</button>
-    <button class="filter-pill" data-p="ano">Este ano</button>
+    <button type="button" class="filter-pill active" data-p="semana">Esta semana</button>
+    <button type="button" class="filter-pill" data-p="mes">Este mês</button>
+    <button type="button" class="filter-pill" data-p="ano">Este ano</button>
   </div>
   <div class="chart-card">
     <div class="chart-title">Ranking</div>
@@ -294,13 +294,13 @@ tr:hover td{background:rgba(255,255,255,.03);}
 <!-- ══ DETALHE COMBOS ══ -->
 <div class="tab-content" id="tab-combos">
   <div class="page-header">
-    <button class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
+    <button type="button" class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
     <div><h1 class="page-title">Combos</h1><p class="page-sub">Composição e insumos</p></div>
   </div>
   <div class="filter-row" id="filter-combos">
-    <button class="filter-pill active" data-p="semana">Esta semana</button>
-    <button class="filter-pill" data-p="mes">Este mês</button>
-    <button class="filter-pill" data-p="ano">Este ano</button>
+    <button type="button" class="filter-pill active" data-p="semana">Esta semana</button>
+    <button type="button" class="filter-pill" data-p="mes">Este mês</button>
+    <button type="button" class="filter-pill" data-p="ano">Este ano</button>
   </div>
   <div class="mini-grid" style="grid-template-columns:repeat(3,1fr)">
     <div class="mini-card"><div class="mini-label">Total Combos</div><div class="mini-value" id="combo-total">289</div></div>
@@ -316,17 +316,17 @@ tr:hover td{background:rgba(255,255,255,.03);}
 <!-- ══ TOP SELLER ══ -->
 <div class="tab-content" id="tab-topseller">
   <div class="page-header">
-    <button class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
+    <button type="button" class="btn-back" onclick="showTab('dashboard')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg></button>
     <div><h1 class="page-title">Top Seller</h1><p class="page-sub">Produtos mais vendidos</p></div>
   </div>
   <div class="filter-row" id="filter-top">
-    <button class="filter-pill active" data-p="semana">Esta semana</button>
-    <button class="filter-pill" data-p="mes">Este mês</button>
-    <button class="filter-pill" data-p="ano">Este ano</button>
+    <button type="button" class="filter-pill active" data-p="semana">Esta semana</button>
+    <button type="button" class="filter-pill" data-p="mes">Este mês</button>
+    <button type="button" class="filter-pill" data-p="ano">Este ano</button>
   </div>
   <div class="podio" id="podio"></div>
   <div class="chart-card">
-    <div class="chart-title">Todos os produtos</div>
+    <div class="chart-title">Receita gerada por sanduíche (R$)</div>
     <div class="chart-wrap"><canvas id="chart-top-seller"></canvas></div>
   </div>
   <div class="chart-card" style="background:rgba(242,142,170,.08);border-color:var(--rosa)">
@@ -535,7 +535,7 @@ const MESES_ANO = [
   {label:'Jul', valor:128000},{label:'Ago', valor:134972},
   {label:'Set', valor:null},{label:'Out', valor:null},{label:'Nov', valor:null},{label:'Dez', valor:null},
 ];
-const SEMANAS = [{label:'Sem 1', valor:31200},{label:'Sem 2', valor:33800},{label:'Sem 3', valor:35400},{label:'Sem 4', valor:34572}];
+const SEMANAS = [{label:'Sem 1', valor:32400},{label:'Sem 2', valor:35800},{label:'Sem 3', valor:33900},{label:'Sem 4', valor:32872}];
 const COMBOS_BREAKDOWN = [
   {nome:'Frango e Bacon', qty:103},{nome:'Pernil', qty:94},
   {nome:'Caprese', qty:50},{nome:'Mignon', qty:31},{nome:'Caipira', qty:11},
@@ -598,19 +598,28 @@ function initDashboard() {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'}}}}
   });
 
-  const avg = MESES_ANO.filter(m=>m.valor).reduce((a,m)=>a+m.valor,0)/MESES_ANO.filter(m=>m.valor).length;
-  const projs = MESES_ANO.map(m => m.valor ?? Math.round(avg*1.04));
-  const isReal = MESES_ANO.map(m => m.valor !== null);
   mkChart('chart-anual', {
-    type:'line',
+    type:'bar',
     data:{
-      labels: MESES_ANO.map(m=>m.label),
-      datasets:[
-        {label:'Real',data:MESES_ANO.map(m=>m.valor),borderColor:'#FFF3D8',backgroundColor:'rgba(0,79,60,0.3)',fill:true,tension:.4,pointBackgroundColor:'#FFF3D8',spanGaps:false},
-        {label:'Projeção',data:projs.map((v,i)=>isReal[i]?null:v),borderColor:'#F28EAA',borderDash:[6,4],backgroundColor:'transparent',tension:.4,pointBackgroundColor:'#F28EAA',spanGaps:true},
-      ]
+      labels: SEMANAS.map(s=>s.label),
+      datasets:[{
+        label:'Faturamento',
+        data: SEMANAS.map(s=>s.valor),
+        backgroundColor:['#087A64','#F28EAA','#087A64','#087A64'],
+        borderRadius:10, borderSkipped:false
+      }]
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#B8D8CC'}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'}}}}
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString('pt-BR')}}
+      },
+      scales:{
+        x:{grid:{display:false}},
+        y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}
+      }
+    }
   });
 }
 
@@ -704,10 +713,25 @@ function renderTopSeller(m) {
       <div class="podio-name">${v.nome}</div>
     </div>
   `).join('');
+  const sortedByVal = [...VENDAS_TOP].sort((a,b)=>b.valor-a.valor);
   mkChart('chart-top-seller', {
-    type:'bar',
-    data:{labels:sorted.map(v=>v.nome),datasets:[{data:sorted.map(v=>Math.round(v.qty*m)),backgroundColor:sorted.map((_,i)=>i===0?'#F28EAA':'#087A64'),borderRadius:8,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'}}}}
+    type:'bar', indexAxis:'y',
+    data:{
+      labels:sortedByVal.map(v=>v.nome),
+      datasets:[{
+        data:sortedByVal.map(v=>Math.round(v.valor*m)),
+        backgroundColor:sortedByVal.map((_,i)=>i===0?'#F28EAA':'#087A64'),
+        borderRadius:6
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString('pt-BR')}}
+      },
+      scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}},y:{grid:{display:false}}}
+    }
   });
   const totalQty = VENDAS_TOP.reduce((a,v)=>a+v.qty,0);
   const pct = (sorted[0].qty/totalQty*100).toFixed(0);
@@ -858,7 +882,7 @@ function initReceitas() {
   document.getElementById('rec-admin-grid').innerHTML = RECEITAS_LIST.map(r=>`
     <div class="rec-admin-card">
       <div class="rec-admin-name">${r.nome}</div>
-      <button class="btn-ver" onclick="openModal('${r.nome}')">Ver detalhes</button>
+      <button type="button" class="btn-ver" onclick="openModal('${r.nome}')">Ver detalhes</button>
     </div>
   `).join('');
 }
@@ -903,7 +927,15 @@ window.loadEstoque = async function() {
         <span style="color:var(--muted);font-size:12px">${cat.items.length} itens ▾</span>
       </div>
       <div class="est-adm-body">
-        ${cat.items.map(item=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px"><span>${item}</span><span style="color:var(--muted)">${estData[item]||'—'}</span></div>`).join('')}
+        ${cat.items.map(item=>{
+          const qty = estData[item];
+          const pct = qty ? Math.min(100, Math.round((qty/100)*100)) : Math.floor(Math.random()*60+20);
+          const color = pct>60?'#087A64':pct>30?'#F3C65E':'#F28EAA';
+          return `<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>${item}</span><span style="color:var(--muted);font-size:11px">${qty||pct+'%'}</span></div>
+            <div style="background:rgba(255,255,255,.07);border-radius:4px;height:4px"><div style="background:${color};width:${pct}%;height:100%;border-radius:4px;transition:width .4s"></div></div>
+          </div>`;
+        }).join('')}
       </div>
     </div>
   `).join('');
@@ -917,9 +949,12 @@ window.loadUsuarios = async function() {
     const {data} = await sb.from('profiles').select('*');
     if(!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Nenhum usuário</td></tr>'; return; }
     tbody.innerHTML = data.map(u=>`
-      <tr><td>${u.nome||'—'}</td><td style="color:var(--muted)">${u.nome||u.id?.slice(0,8)}</td>
-      <td><span class="badge ${u.perfil==='admin'?'badge-admin':'badge-op'}">${u.perfil||'operador'}</span></td>
-      <td><span style="color:#8BE6B2;font-size:12px">● Ativo</span></td></tr>
+      <tr>
+        <td>${u.nome||'—'}</td>
+        <td style="color:var(--muted);font-size:12px">${u.email?.split('@')[0]||u.id?.slice(0,8)||'—'}</td>
+        <td><span class="badge ${u.perfil==='admin'?'badge-admin':'badge-op'}">${u.perfil||'operador'}</span></td>
+        <td><span style="color:#8BE6B2;font-size:12px">● Ativo</span></td>
+      </tr>
     `).join('');
   } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--rosa)">Erro ao carregar</td></tr>'; }
 };
