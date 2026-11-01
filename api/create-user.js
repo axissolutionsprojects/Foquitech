@@ -1,12 +1,14 @@
-import { randomUUID } from 'crypto';
+const { randomUUID } = require('crypto');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
+
   const { email, password, nome, perfil } = req.body;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;
+
   if (!SERVICE_KEY || !SUPABASE_URL) {
-    return res.status(500).json({ error: 'Variáveis de ambiente não configuradas' });
+    return res.status(500).json({ error: 'Variáveis SUPABASE_URL e SUPABASE_SERVICE_KEY não configuradas no Vercel' });
   }
 
   try {
@@ -29,9 +31,9 @@ export default async function handler(req, res) {
     if (r.ok) return res.status(200).json({ ok: true });
 
     const data = await r.json().catch(() => ({}));
-    const msg = data.message || data.hint || data.error || JSON.stringify(data);
+    const msg = data.message || data.hint || data.details || data.error || JSON.stringify(data);
     return res.status(400).json({ error: msg });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
-}
+};
