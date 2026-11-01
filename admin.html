@@ -337,7 +337,29 @@ tr:hover td{background:rgba(255,255,255,.03);}
 
 <!-- ══ RELATÓRIOS ══ -->
 <div class="tab-content" id="tab-relatorios">
-  <div class="page-header"><h1 class="page-title">Relatórios</h1><p class="page-sub">Logs e auditoria</p></div>
+  <div class="page-header"><h1 class="page-title">Relatórios</h1><p class="page-sub">Logs, auditoria e importação de dados</p></div>
+
+  <!-- Upload de relatório -->
+  <div class="chart-card" style="margin-bottom:24px;">
+    <div style="font-family:'Ohno',Georgia,serif;font-size:1.1rem;color:var(--cream);margin-bottom:4px;">Importar Relatório</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Aceita PDF, imagem, link ou CSV — quanto mais dados, mais completo fica o dashboard.</div>
+    <div style="background:var(--card-inset);border:2px dashed var(--border);border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .2s;" id="drop-zone" onclick="document.getElementById('rel-upload').click()" ondragover="event.preventDefault();this.style.borderColor='var(--rosa)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleFileDrop(event)">
+      <div style="font-size:2rem;margin-bottom:8px;">📂</div>
+      <div style="color:var(--cream);font-size:14px;font-family:'Ohno',Georgia,serif;">Arraste ou clique para enviar</div>
+      <div style="color:var(--muted);font-size:12px;margin-top:4px;">PDF · Imagem · CSV · Link</div>
+      <input type="file" id="rel-upload" accept=".pdf,.csv,.png,.jpg,.jpeg,.webp" style="display:none" onchange="handleFileUpload(this.files[0])">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+      <input type="url" id="rel-link" placeholder="Ou cole um link (Google Sheets, Drive...)" style="flex:1;background:var(--card-inset);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
+      <button type="button" onclick="handleLink()" style="background:var(--rosa);border:none;border-radius:10px;padding:9px 16px;color:var(--ink);font-family:'Ohno',Georgia,serif;cursor:pointer;white-space:nowrap;">Importar</button>
+    </div>
+    <div style="margin-top:10px;font-size:12px;background:rgba(142,230,178,.08);border:1px solid rgba(142,230,178,.2);border-radius:8px;padding:8px 12px;color:#8BE6B2;">
+      💡 <strong>Dica:</strong> enviar em <strong>CSV</strong> garante a melhor leitura de dados — o dashboard interpreta automaticamente colunas de produto, quantidade e valor.
+    </div>
+    <div id="upload-status" style="margin-top:10px;font-size:13px;display:none;"></div>
+    <div id="upload-list" style="margin-top:12px;"></div>
+  </div>
+
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
     <input type="date" id="rel-from" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
     <input type="date" id="rel-to" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
@@ -718,6 +740,80 @@ function renderLogsSimulados(tbody) {
   ];
   tbody.innerHTML = sim.map(l=>`<tr><td>${l.t}</td><td>${l.u}</td><td><span class="badge badge-op">${l.a}</span></td><td style="color:var(--muted);font-size:12px">${l.d}</td></tr>`).join('');
 }
+
+// ── Upload de relatório ──────────────────────────────────────
+var _uploads = JSON.parse(localStorage.getItem('foqui_uploads')||'[]');
+
+function renderUploads(){
+  var list = document.getElementById('upload-list');
+  if(!list) return;
+  if(!_uploads.length){ list.innerHTML=''; return; }
+  list.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Arquivos importados:</div>' +
+    _uploads.map(function(u,i){
+      return '<div style="display:flex;align-items:center;gap:8px;background:var(--card-inset);border-radius:8px;padding:7px 10px;margin-bottom:4px;">' +
+        '<span style="font-size:16px;">'+getIcon(u.type)+'</span>' +
+        '<span style="flex:1;color:var(--cream);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+u.name+'</span>' +
+        '<span style="color:var(--muted);font-size:11px;">'+u.date+'</span>' +
+        '<button type="button" onclick="removeUpload('+i+')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px;">✕</button>' +
+      '</div>';
+    }).join('');
+}
+
+function getIcon(type){
+  if(!type) return '🔗';
+  if(type.includes('csv') || type.includes('text')) return '📊';
+  if(type.includes('pdf')) return '📄';
+  if(type.includes('image')) return '🖼️';
+  return '📁';
+}
+
+window.removeUpload = function(i){
+  _uploads.splice(i,1);
+  localStorage.setItem('foqui_uploads', JSON.stringify(_uploads));
+  renderUploads();
+};
+
+function showStatus(msg, ok){
+  var el = document.getElementById('upload-status');
+  if(!el) return;
+  el.style.display='block';
+  el.style.color = ok ? '#8BE6B2' : 'var(--rosa)';
+  el.textContent = msg;
+  setTimeout(function(){ el.style.display='none'; }, 4000);
+}
+
+window.handleFileDrop = function(e){
+  e.preventDefault();
+  document.getElementById('drop-zone').style.borderColor='var(--border)';
+  var file = e.dataTransfer.files[0];
+  if(file) handleFileUpload(file);
+};
+
+window.handleFileUpload = function(file){
+  if(!file) return;
+  var allowed = ['pdf','csv','png','jpg','jpeg','webp','text'];
+  var ext = file.name.split('.').pop().toLowerCase();
+  if(!allowed.some(function(a){ return file.type.includes(a) || ext===a; })){
+    showStatus('Formato não suportado. Use PDF, imagem ou CSV.', false); return;
+  }
+  _uploads.unshift({ name: file.name, type: file.type, date: new Date().toLocaleDateString('pt-BR'), size: (file.size/1024).toFixed(0)+'KB' });
+  localStorage.setItem('foqui_uploads', JSON.stringify(_uploads));
+  renderUploads();
+  showStatus('✓ ' + file.name + ' importado com sucesso!', true);
+};
+
+window.handleLink = function(){
+  var val = document.getElementById('rel-link').value.trim();
+  if(!val){ showStatus('Cole um link válido.', false); return; }
+  _uploads.unshift({ name: val, type: '', date: new Date().toLocaleDateString('pt-BR') });
+  localStorage.setItem('foqui_uploads', JSON.stringify(_uploads));
+  document.getElementById('rel-link').value='';
+  renderUploads();
+  showStatus('✓ Link importado!', true);
+};
+
+setTimeout(renderUploads, 300);
+// ── /Upload de relatório ──────────────────────────────────────
 
 window.exportCSV = function() {
   const logs = window._logsData;
