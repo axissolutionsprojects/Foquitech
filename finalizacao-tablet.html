@@ -133,9 +133,9 @@ svg{display:block;}
 .afazer.partial{color:var(--color-warning);}
 .afazer.empty{color:var(--color-pink);}
 .ct-inp{width:72px;height:48px;background:var(--color-card-inset);border:var(--border-card);color:var(--color-cream);border-radius:12px;text-align:center;font-family:'Heading';font-size:17px;cursor:pointer;}
-.kp-btn{background:rgba(255,255,255,.07);border:none;border-radius:14px;padding:18px 10px;font-size:22px;color:#FFF3D8;font-family:'Ohno',Georgia,serif;cursor:pointer;transition:background .1s;-webkit-tap-highlight-color:transparent;width:100%;}
+.kp-btn{background:rgba(255,255,255,.07);border:none;border-radius:14px;padding:18px 10px;font-size:24px;color:#FFF3D8;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:500;cursor:pointer;transition:background .1s;-webkit-tap-highlight-color:transparent;width:100%;}
 .kp-btn:active{background:rgba(242,142,170,.25);}
-.kp-done{background:#F28EAA!important;color:#1A1A1A!important;font-size:16px!important;}
+.kp-done{background:#F28EAA!important;color:#1A1A1A!important;font-size:16px!important;font-family:'Ohno',Georgia,serif!important;}
 .grid-st{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(10px,1.5vw,14px);}
 .st-card{background:var(--color-card);border:var(--border-card);border-radius:18px;padding:20px;}
 .st-card .nm{font-size:18px;color:var(--color-cream);margin-bottom:8px;}
@@ -198,7 +198,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 <body>
 <div id="num-kp" style="display:none;position:fixed;inset:0;z-index:10000;align-items:flex-end;">
   <div id="kp-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,.5);"></div>
-  <div style="position:relative;width:100%;background:#1A2E27;border-radius:24px 24px 0 0;padding:16px 16px 24px;box-shadow:0 -8px 32px rgba(0,0,0,.4);">
+  <div style="position:relative;width:calc(100% - 6cm);max-width:520px;margin:0 auto;background:#1A2E27;border-radius:24px 24px 0 0;padding:16px 16px 24px;box-shadow:0 -8px 32px rgba(0,0,0,.4);">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 4px;">
       <span id="kp-label" style="font-size:13px;color:#B8D8CC;font-family:'Ohno',Georgia,serif;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
       <span id="kp-val" style="font-size:30px;color:#FFF3D8;font-family:'Ohno',Georgia,serif;font-weight:700;">0</span>
