@@ -178,7 +178,6 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 
 </head>
 <body>
-<div id="user-badge" style="display:none;position:fixed;top:14px;right:16px;z-index:9999;align-items:center;gap:7px;background:rgba(0,0,0,.6);border:1.5px solid #F28EAA;border-radius:20px;padding:5px 14px 5px 10px;font-size:13px;color:#FFF3D8;font-family:'Ohno',Georgia,serif;backdrop-filter:blur(8px);pointer-events:none;"><span style="width:7px;height:7px;border-radius:50%;background:#F28EAA;flex-shrink:0;display:inline-block;"></span><span id="user-badge-name"></span></div>
 <div id="num-kp" style="display:none;position:fixed;inset:0;z-index:10000;align-items:flex-end;">
   <div id="kp-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,.5);"></div>
   <div style="position:relative;width:100%;background:#1A2E27;border-radius:24px 24px 0 0;padding:16px 16px 24px;box-shadow:0 -8px 32px rgba(0,0,0,.4);">
@@ -829,8 +828,16 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
       window._supabase = sb;
       window._session = session;
       var nome = (session.user.user_metadata && session.user.user_metadata.nome) || session.user.email.split('@')[0];
-      document.getElementById('user-badge-name').textContent = nome;
-      document.getElementById('user-badge').style.display = 'flex';
+      document.querySelectorAll('.date-pill').forEach(function(pill){
+        var w=document.createElement('div');
+        w.style.cssText='display:flex;align-items:center;gap:8px;';
+        pill.parentNode.insertBefore(w,pill);
+        var b=document.createElement('div');
+        b.style.cssText='display:flex;align-items:center;gap:6px;border:1.5px solid #F28EAA;border-radius:20px;padding:4px 12px 4px 8px;font-size:12px;color:#FFF3D8;font-family:"Ohno",Georgia,serif;white-space:nowrap;';
+        b.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:#F28EAA;flex-shrink:0;display:inline-block;"></span><span>'+nome+'</span>';
+        w.appendChild(b);
+        w.appendChild(pill);
+      });
       var perfil = session.user.user_metadata && session.user.user_metadata.perfil || session.user.app_metadata && session.user.app_metadata.perfil;
       if(perfil === 'admin'){
         var adminBtn = document.getElementById('admin-link');
