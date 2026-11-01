@@ -665,12 +665,29 @@ function renderVendas(period, m) {
   if(period === 'hoje') { labels=['9h','10h','11h','12h','13h','14h','15h','16h','17h','18h','19h','20h']; data=[420,680,890,1240,1560,1320,980,1100,1380,1560,1240,820]; }
   else if(period === 'semana') { labels=SEMANAS.map(s=>s.label); data=SEMANAS.map(s=>Math.round(s.valor)); }
   else if(period === 'mes') { labels=Array.from({length:31},(_,i)=>`${i+1}`); data=Array.from({length:31},()=>Math.round(134972/31+Math.random()*1000-500)); }
-  else { labels=MESES_ANO.map(m=>m.label); data=MESES_ANO.map(m=>m.valor||Math.round(134972*1.04)); }
-  mkChart('chart-vendas-linha', {
-    type:'line',
-    data:{labels, datasets:[{label:'Receita',data,borderColor:'#FFF3D8',backgroundColor:'rgba(0,79,60,0.3)',fill:true,tension:.4,pointBackgroundColor:'#FFF3D8'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'}}}}
-  });
+  else {
+    // Apenas Agosto é dado real. Set-Dez são projeções com base em Ago + 3% a.m.
+    labels = MESES_ANO.map(m=>m.label);
+    const realIdx = 7; // Agosto
+    const baseVal = 134972;
+    const realData = MESES_ANO.map((m,i) => i <= realIdx ? (m.valor||null) : null);
+    const projData = MESES_ANO.map((m,i) => i >= realIdx ? Math.round(baseVal * Math.pow(1.03, i - realIdx)) : null);
+    data = realData;
+    mkChart('chart-vendas-linha', {
+      type:'line',
+      data:{labels, datasets:[
+        {label:'Confirmado',data:realData,borderColor:'#FFF3D8',backgroundColor:'rgba(0,79,60,0.3)',fill:true,tension:.4,pointBackgroundColor:'#FFF3D8',spanGaps:false},
+        {label:'Projeção (+3%/mês)',data:projData,borderColor:'#F28EAA',backgroundColor:'rgba(242,142,170,0.1)',fill:true,tension:.4,borderDash:[6,4],pointBackgroundColor:'#F28EAA',spanGaps:false}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{display:true,labels:{color:'#B8D8CC',boxWidth:12,padding:16}},
+          tooltip:{callbacks:{label:ctx=>'R$ '+(ctx.raw||0).toLocaleString('pt-BR')}}
+        },
+        scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}}
+      }
+    });
+  }
 }
 
 function renderSanduiches(m) {
@@ -891,7 +908,17 @@ window.openModal = function(nome) {
   const rec = RECEITAS_LIST.find(r=>r.nome===nome);
   if(!rec) return;
   document.getElementById('modal-rec-title').textContent = rec.nome;
-  document.getElementById('modal-rec-body').innerHTML = rec.ings.map(([n,v])=>`<div class="ing-row-adm"><span>${n}</span><span style="color:var(--rosa)">${v}</span></div>`).join('');
+  const overrides = JSON.parse(localStorage.getItem('foqui_rec_overrides')||'{}');
+  const recOverrides = overrides[rec.nome] || {};
+  document.getElementById('modal-rec-body').innerHTML = rec.ings.map(([n,v],i)=>{
+    const val = recOverrides[n] || v;
+    return `<div class="ing-row-adm" style="display:flex;align-items:center;gap:8px;">
+      <span style="flex:1">${n}</span>
+      <span id="ing-val-${i}" style="color:var(--rosa)">${val}</span>
+      <button type="button" onclick="editIng('${rec.nome}','${n}',${i})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px 4px;" title="Editar">✏️</button>
+    </div>`;
+  }).join('');
+  document.getElementById('modal-rec-title').setAttribute('data-rec', rec.nome);
   document.getElementById('modal-receita').classList.add('open');
 };
 window.closeModal = function() { document.getElementById('modal-receita').classList.remove('open'); };
@@ -903,9 +930,17 @@ function initProgramacao() {
   const rows = [];
   Object.entries(CAL_DATA).forEach(([dow, items]) => {
     items.forEach((it, i) => {
+      const idx = i;
+      const progOverrides = JSON.parse(localStorage.getItem('foqui_prog_overrides')||'{}');
+      const key = dow+'-'+idx;
+      const itNome = (progOverrides[key]||{}).nome || it.nome;
+      const itQty  = (progOverrides[key]||{}).qty  || it.qty;
+      const itH    = (progOverrides[key]||{}).h    || it.h;
       rows.push(`<tr>
         ${i===0 ? `<td class="prog-day" rowspan="${items.length}">${DIAS_NOME[dow]}</td>` : ''}
-        <td>${it.h}</td><td>${it.nome}</td><td style="color:var(--rosa)">${it.qty}</td>
+        <td><span id="prog-h-${key}">${itH}</span> <button type="button" onclick="editProg('${key}','h','${itH}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button></td>
+        <td><span id="prog-n-${key}">${itNome}</span> <button type="button" onclick="editProg('${key}','nome','${itNome}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button></td>
+        <td style="color:var(--rosa)"><span id="prog-q-${key}">${itQty}</span> <button type="button" onclick="editProg('${key}','qty','${itQty}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button></td>
       </tr>`);
     });
   });
@@ -913,6 +948,87 @@ function initProgramacao() {
 }
 
 // ── Estoque ────────────────────────────────────────────────────
+// ── Funções de edição inline ───────────────────────────────────
+window.editIng = function(recNome, ingNome, idx) {
+  const el = document.getElementById('ing-val-'+idx);
+  if(!el) return;
+  const cur = el.textContent;
+  const input = document.createElement('input');
+  input.value = cur;
+  input.style.cssText = 'width:80px;background:var(--card-inset);border:1.5px solid var(--rosa);border-radius:6px;padding:2px 6px;color:var(--cream);font-size:13px;outline:none';
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+  function save() {
+    const val = input.value.trim() || cur;
+    const span = document.createElement('span');
+    span.id = 'ing-val-'+idx;
+    span.style.color = 'var(--rosa)';
+    span.textContent = val;
+    input.replaceWith(span);
+    const overrides = JSON.parse(localStorage.getItem('foqui_rec_overrides')||'{}');
+    if(!overrides[recNome]) overrides[recNome] = {};
+    overrides[recNome][ingNome] = val;
+    localStorage.setItem('foqui_rec_overrides', JSON.stringify(overrides));
+    // Sync para producao-tablet: flag de refresh
+    localStorage.setItem('foqui_rec_updated', Date.now().toString());
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){ input.value=cur; input.blur(); }});
+};
+
+window.editProg = function(key, field, cur) {
+  const el = document.getElementById('prog-'+field[0]+'-'+key);
+  if(!el) return;
+  const input = document.createElement('input');
+  input.value = cur;
+  input.style.cssText = 'width:'+(field==='nome'?'130':'60')+'px;background:var(--card-inset);border:1.5px solid var(--rosa);border-radius:6px;padding:2px 6px;color:var(--cream);font-size:13px;outline:none';
+  el.replaceWith(input);
+  input.focus(); input.select();
+  function save() {
+    const val = input.value.trim() || cur;
+    const span = document.createElement('span');
+    span.id = 'prog-'+field[0]+'-'+key;
+    span.textContent = val;
+    input.replaceWith(span);
+    const overrides = JSON.parse(localStorage.getItem('foqui_prog_overrides')||'{}');
+    if(!overrides[key]) overrides[key] = {};
+    overrides[key][field] = val;
+    localStorage.setItem('foqui_prog_overrides', JSON.stringify(overrides));
+    localStorage.setItem('foqui_prog_updated', Date.now().toString());
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){ input.value=cur; input.blur(); }});
+};
+
+window.editEst = function(key, nome, cur) {
+  const safeKey = key.replace(/\s/g,'_');
+  const el = document.getElementById('est-val-'+safeKey);
+  if(!el) return;
+  const input = document.createElement('input');
+  input.value = cur;
+  input.type = 'number'; input.min = '0';
+  input.style.cssText = 'width:70px;background:var(--card-inset);border:1.5px solid var(--rosa);border-radius:6px;padding:2px 6px;color:var(--cream);font-size:13px;outline:none';
+  el.replaceWith(input);
+  input.focus(); input.select();
+  function save() {
+    const val = input.value.trim() || cur;
+    const span = document.createElement('span');
+    span.id = 'est-val-'+safeKey;
+    span.style.color = 'var(--muted)'; span.style.fontSize = '11px';
+    span.textContent = val+'%';
+    input.replaceWith(span);
+    // Salva no mesmo localStorage que producao-tablet usa
+    const est = JSON.parse(localStorage.getItem('foqui_estoque')||'{}');
+    est[nome] = parseFloat(val);
+    localStorage.setItem('foqui_estoque', JSON.stringify(est));
+    localStorage.setItem('foqui_est_updated', Date.now().toString());
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){ input.value=cur; input.blur(); }});
+};
+// ── /Funções de edição inline ──────────────────────────────────
+
 window.loadEstoque = async function() {
   let estData = {};
   try {
@@ -931,8 +1047,13 @@ window.loadEstoque = async function() {
           const qty = estData[item];
           const pct = qty ? Math.min(100, Math.round((qty/100)*100)) : Math.floor(Math.random()*60+20);
           const color = pct>60?'#087A64':pct>30?'#F3C65E':'#F28EAA';
+          const estKey = cat.cat+'-'+item;
           return `<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>${item}</span><span style="color:var(--muted);font-size:11px">${qty||pct+'%'}</span></div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:5px">
+              <span style="flex:1">${item}</span>
+              <span id="est-val-${estKey.replace(/\s/g,'_')}" style="color:var(--muted);font-size:11px">${qty||pct+'%'}</span>
+              <button type="button" onclick="editEst('${estKey}','${item}',${qty||pct})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button>
+            </div>
             <div style="background:rgba(255,255,255,.07);border-radius:4px;height:4px"><div style="background:${color};width:${pct}%;height:100%;border-radius:4px;transition:width .4s"></div></div>
           </div>`;
         }).join('')}
