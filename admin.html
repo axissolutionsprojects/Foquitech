@@ -410,7 +410,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
       <span style="font-size:11px;color:var(--muted)" id="logs-count"></span>
     </div>
     <div class="tbl-wrap">
-      <table><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Painel</th><th>Ação</th><th>Detalhes</th></tr></thead>
+      <table><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Painel</th><th>Ação</th><th>Valor inserido</th></tr></thead>
       <tbody id="tbl-logs"></tbody></table>
     </div>
     <div style="display:flex;gap:10px;margin-top:14px;align-items:center;" id="logs-actions">
@@ -980,6 +980,21 @@ function renderTopSeller(m) {
 var _logsVisible = 4;
 var _logsData = [];
 
+function logValor(l) {
+  const d = l.detalhes||{};
+  if(l.acao === 'estoque_atualizado') {
+    const v = d.valor;
+    if(v == null) return '—';
+    return v >= 1000
+      ? `<strong style="color:var(--rosa)">${(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:3})} kg</strong>`
+      : `<strong style="color:var(--rosa)">${v.toLocaleString('pt-BR',{maximumFractionDigits:1})} g</strong>`;
+  }
+  if(l.acao === 'receita_salva') return d.receita ? `<span style="color:#FFF3D8">${d.receita}</span>` : '—';
+  if(l.acao === 'checklist') return d.item ? `<span style="color:#FFF3D8">${d.item}</span> <span style="font-size:11px;color:${d.status==='concluido'?'#8BE6B2':'var(--rosa)'}">${d.status||''}</span>` : '—';
+  if(l.acao === 'navegacao') return `<span style="color:var(--muted);font-size:11px">${(d.tela||'').replace('v-','').replace('f-','')}</span>`;
+  return '—';
+}
+
 function renderLogs(){
   const tbody = document.getElementById('tbl-logs');
   const slice = _logsData.slice(0, _logsVisible);
@@ -987,13 +1002,12 @@ function renderLogs(){
   tbody.innerHTML = slice.map(l=>{
     const d = l.detalhes||{};
     const painel = d.painel || (l.acao==='login'?'—':'producao');
-    const det = d.tela||d.item||d.receita||d.status||'';
     return `<tr>
       <td style="white-space:nowrap;font-size:12px">${new Date(l.criado_em).toLocaleString('pt-BR')}</td>
       <td>${l.usuario_email?.split('@')[0]||'—'}</td>
       <td><span style="font-size:11px;color:var(--muted)">${painel}</span></td>
       <td><span class="badge badge-op" style="font-size:11px">${ACOES[l.acao]||l.acao}</span></td>
-      <td style="color:var(--muted);font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${det}</td>
+      <td style="font-size:13px">${logValor(l)}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhum log ainda</td></tr>';
   const count = document.getElementById('logs-count');
@@ -1418,6 +1432,7 @@ async function loadUserLogs(uid) {
     el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
       <thead><tr style="color:var(--muted);font-size:11px;text-transform:uppercase;">
         <th style="text-align:left;padding:6px 8px">Ação</th>
+        <th style="text-align:left;padding:6px 8px">Valor inserido</th>
         <th style="text-align:left;padding:6px 8px">Painel</th>
         <th style="text-align:left;padding:6px 8px">Data</th>
       </tr></thead>
@@ -1427,8 +1442,9 @@ async function loadUserLogs(uid) {
         const dtStr = dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
         return `<tr style="border-top:1px solid rgba(255,255,255,.06)">
           <td style="padding:8px"><span class="badge badge-op" style="font-size:11px">${ACOES_MAP[l.acao]||l.acao}</span></td>
+          <td style="padding:8px">${logValor(l)}</td>
           <td style="padding:8px;color:var(--muted)">${d.painel||'—'}</td>
-          <td style="padding:8px;color:var(--muted)">${dtStr}</td>
+          <td style="padding:8px;color:var(--muted);white-space:nowrap">${dtStr}</td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
