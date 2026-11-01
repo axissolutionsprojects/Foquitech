@@ -350,7 +350,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
       <input type="file" id="rel-upload" accept=".pdf,.csv,.png,.jpg,.jpeg,.webp" style="display:none" onchange="handleFileUpload(this.files[0])">
     </div>
     <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-      <input type="url" id="rel-link" placeholder="Ou cole um link (Google Sheets, Drive...)" style="flex:1;background:var(--card-inset);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
+      <input type="text" id="rel-link" placeholder="Ou cole um link (Google Sheets, Drive...)" style="flex:1;background:var(--card-inset);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--cream);font-family:inherit;font-size:13px;outline:none;">
       <button type="button" onclick="handleLink()" style="background:var(--rosa);border:none;border-radius:10px;padding:9px 16px;color:var(--ink);font-family:'Ohno',Georgia,serif;cursor:pointer;white-space:nowrap;">Importar</button>
     </div>
     <div style="margin-top:10px;font-size:12px;background:rgba(142,230,178,.08);border:1px solid rgba(142,230,178,.2);border-radius:8px;padding:8px 12px;color:#8BE6B2;">
@@ -419,7 +419,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
       <div class="field"><label>Perfil</label><select id="u-perfil"><option value="operador">Operador</option><option value="admin">Admin</option></select></div>
       <div class="field"><label>Senha</label><input type="password" id="u-senha" placeholder="Mín. 6 caracteres"></div>
     </div>
-    <button class="btn-criar" onclick="criarUsuario()">Criar Usuário</button>
+    <button type="button" class="btn-criar" onclick="criarUsuario()">Criar Usuário</button>
     <div class="form-msg" id="u-msg"></div>
   </div>
 </div>
