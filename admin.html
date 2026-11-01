@@ -211,6 +211,10 @@ tr:hover td{background:rgba(255,255,255,.03);}
   <button type="button" class="nav-item" data-tab="programacao">Programação</button>
   <button type="button" class="nav-item" data-tab="estoque">Estoque</button>
   <button type="button" class="nav-item" data-tab="usuarios">Usuários</button>
+  <div class="sidebar-sep"></div>
+  <button type="button" class="nav-item" data-tab="ponto" style="opacity:.6;">Gestão de Ponto</button>
+  <button type="button" class="nav-item" data-tab="rh" style="opacity:.6;">Gestão de RH</button>
+  <button type="button" class="nav-item" data-tab="financeiro" style="opacity:.6;">Gestão Financeira</button>
   <div class="sidebar-sep" style="margin-top:auto;"></div>
   <button type="button" class="nav-item" data-tab="config">Configurações</button>
 </nav>
@@ -506,6 +510,46 @@ tr:hover td{background:rgba(255,255,255,.03);}
         <div id="mu-logs-body" style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">Carregando...</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ══ EM BREVE ══ -->
+<div class="tab-content" id="tab-ponto" style="display:none">
+  <div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;padding:40px 20px;">
+    <div style="position:relative;display:inline-block;">
+      <div style="background:#F28EAA;clip-path:polygon(8% 0%,92% 0%,100% 8%,100% 80%,50% 100%,0% 80%,0% 8%);width:180px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transform:rotate(-3deg);box-shadow:4px 6px 20px rgba(242,142,170,.35);">
+        <div style="font-family:'Ohno',Georgia,serif;font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.12em;text-transform:uppercase;">em breve</div>
+        <div style="font-family:'Ohno',Georgia,serif;font-size:22px;color:#fff;line-height:1.2;padding:0 16px;">Gestão de Ponto</div>
+      </div>
+    </div>
+    <h1 style="font-family:'Ohno',Georgia,serif;font-size:2rem;color:var(--cream);margin:0;">Gestão de Ponto</h1>
+    <p style="color:var(--muted);font-size:15px;max-width:400px;line-height:1.6;margin:0;">Controle de jornada, entrada e saída, horas extras e banco de horas. Em desenvolvimento.</p>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-rh" style="display:none">
+  <div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;padding:40px 20px;">
+    <div style="position:relative;display:inline-block;">
+      <div style="background:#F28EAA;clip-path:polygon(8% 0%,92% 0%,100% 8%,100% 80%,50% 100%,0% 80%,0% 8%);width:180px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transform:rotate(2deg);box-shadow:4px 6px 20px rgba(242,142,170,.35);">
+        <div style="font-family:'Ohno',Georgia,serif;font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.12em;text-transform:uppercase;">em breve</div>
+        <div style="font-family:'Ohno',Georgia,serif;font-size:22px;color:#fff;line-height:1.2;padding:0 16px;">Gestão de RH</div>
+      </div>
+    </div>
+    <h1 style="font-family:'Ohno',Georgia,serif;font-size:2rem;color:var(--cream);margin:0;">Gestão de RH</h1>
+    <p style="color:var(--muted);font-size:15px;max-width:400px;line-height:1.6;margin:0;">Cadastro de colaboradores, férias, benefícios e documentação. Em desenvolvimento.</p>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-financeiro" style="display:none">
+  <div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;padding:40px 20px;">
+    <div style="position:relative;display:inline-block;">
+      <div style="background:#F28EAA;clip-path:polygon(8% 0%,92% 0%,100% 8%,100% 80%,50% 100%,0% 80%,0% 8%);width:180px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transform:rotate(-2deg);box-shadow:4px 6px 20px rgba(242,142,170,.35);">
+        <div style="font-family:'Ohno',Georgia,serif;font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.12em;text-transform:uppercase;">em breve</div>
+        <div style="font-family:'Ohno',Georgia,serif;font-size:19px;color:#fff;line-height:1.2;padding:0 14px;">Gestão Financeira</div>
+      </div>
+    </div>
+    <h1 style="font-family:'Ohno',Georgia,serif;font-size:2rem;color:var(--cream);margin:0;">Gestão Financeira</h1>
+    <p style="color:var(--muted);font-size:15px;max-width:400px;line-height:1.6;margin:0;">Fluxo de caixa, DRE, contas a pagar e receber. Em desenvolvimento.</p>
   </div>
 </div>
 

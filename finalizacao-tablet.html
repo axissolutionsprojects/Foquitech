@@ -392,12 +392,12 @@ document.querySelectorAll('.ct-row .ct-inp').forEach(ctCalc);
     else{_raw=(_raw===''||_raw==='0')?k:_raw+k;}
     document.getElementById('kp-val').textContent=fmt(_raw)||'0';
   });
-  document.querySelectorAll('.ct-inp').forEach(function(inp){
+  document.addEventListener('click',function(e){
+    var inp=e.target.closest('.ct-inp');
+    if(!inp)return;
     inp.setAttribute('readonly','');
-    inp.addEventListener('click',function(){
-      var label=inp.closest('.ct-row')?inp.closest('.ct-row').querySelector('.nm')?.textContent||'':'';
-      open(inp,label);
-    });
+    var label=inp.closest('.ct-row')?inp.closest('.ct-row').querySelector('.nm')?.textContent||'':'';
+    open(inp,label);
   });
 })();
 // ── /Teclado Numérico ──────────────────────────────────────────

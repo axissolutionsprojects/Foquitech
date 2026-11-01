@@ -1004,7 +1004,9 @@ function toggleEstCat(id){
 
 function updateEst(id, val, catId, inputEl){
   const d = loadEst();
-  d[id] = parseFloat(val||0);
+  const numVal = parseFloat((val||'0').replace(/\./g,'').replace(',','.')) || 0;
+  d[id] = numVal;
+  val = numVal;
   saveEst(d);logAction('estoque_atualizado',{item:id,valor:parseFloat(val||0)});
   // re-render só o header da categoria para não perder foco
   const cat = EST_DATA.find(c=>c.id===catId);
@@ -1029,7 +1031,7 @@ function updateEst(id, val, catId, inputEl){
   const cor = estColor(s);
   const pct = item.base>0?Math.min(100,Math.round(v/item.base*100)):0;
   const valDiv = row.querySelector('.est-row-val');
-  if(valDiv) valDiv.innerHTML = `${item.val} · <span style="color:${cor};font-weight:700;">${estLabel(s)}${v>0?' ('+v+'kg)':''}</span>`;
+  if(valDiv) valDiv.innerHTML = `${item.val} · <span style="color:${cor};font-weight:700;">${estLabel(s)}${v>0?' ('+fmtQty(v,item.un||'kg')+')':''}</span>`;
   const bar = row.querySelector('div[style*="border-radius:3px;background:"]');
   if(bar) bar.style.cssText = `height:3px;border-radius:3px;background:${cor};width:${pct}%;`;
 }
@@ -1037,9 +1039,8 @@ function updateEst(id, val, catId, inputEl){
 document.addEventListener('DOMContentLoaded', renderEstoque);
 
 function fmtQty(val, unit) {
-  if(unit === 'g' && val >= 1000) {
-    return (val/1000).toLocaleString('pt-BR',{maximumFractionDigits:3}) + ' kg';
-  }
+  if(unit === 'g' && val >= 1000)  return (val/1000).toLocaleString('pt-BR',{maximumFractionDigits:3}) + ' kg';
+  if(unit === 'ml' && val >= 1000) return (val/1000).toLocaleString('pt-BR',{maximumFractionDigits:3}) + ' L';
   return val.toLocaleString('pt-BR',{maximumFractionDigits:1}) + (unit ? ' '+unit : '');
 }
 
@@ -1274,14 +1275,14 @@ function goBack(url){sessionStorage.setItem('vt-back','1');location.href=url;}
     else{_raw=(_raw===''||_raw==='0')?k:_raw+k;}
     document.getElementById('kp-val').textContent=fmt(_raw)||'0';
   });
-  function attach(){
-    document.querySelectorAll('.base-input').forEach(function(inp){
-      inp.setAttribute('readonly','');
-      inp.addEventListener('click',function(){open(inp,inp.placeholder||'Quantidade');});
-    });
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach);
-  else attach();
+  // Event delegation — captura qualquer input numérico mesmo gerado dinamicamente
+  document.addEventListener('click',function(e){
+    var inp=e.target.closest('.base-input,.est-inp');
+    if(!inp)return;
+    inp.setAttribute('readonly','');
+    var label=inp.placeholder||inp.closest('.est-row')?.querySelector('.est-row-name')?.textContent||'Quantidade';
+    open(inp,label);
+  });
 })();
 // ── /Teclado Numérico ──────────────────────────────────────────
 
