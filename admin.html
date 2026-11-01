@@ -64,6 +64,14 @@ html,body{height:100%;background:var(--bg);color:var(--cream);font-family:'HdgPr
 .chart-title{font-family:'Ohno',Georgia,serif;font-size:1.2rem;margin-bottom:16px;}
 .chart-wrap{position:relative;height:300px;}
 
+/* ── DASHBOARD DRAG ── */
+#dash-sortable{display:flex;flex-direction:column;gap:16px;}
+.dash-block{position:relative;}
+.drag-handle{position:absolute;left:-24px;top:50%;transform:translateY(-50%);color:var(--border);font-size:18px;cursor:grab;padding:4px;user-select:none;opacity:0;transition:opacity .15s;}
+.dash-block:hover .drag-handle{opacity:1;}
+.dash-block.drag-over{opacity:.4;}
+.dash-block.dragging{opacity:.35;}
+
 /* ── FILTROS PERÍODO ── */
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
 .filter-pill{background:none;border:1.5px solid var(--border);border-radius:20px;padding:6px 16px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;}
@@ -214,35 +222,60 @@ tr:hover td{background:rgba(255,255,255,.03);}
 <!-- ══ DASHBOARD ══ -->
 <div class="tab-content active" id="tab-dashboard">
   <div class="page-header"><h1 class="page-title">Dashboard</h1><p class="page-sub">Agosto 2026</p></div>
-  <div class="metric-grid">
-    <div class="metric-card" onclick="showDetail('vendas')">
-      <div class="metric-label">Total Vendas</div>
-      <div class="metric-value">R$ 134.972</div>
-      <div class="metric-sub">Agosto 2026 ↗</div>
+  <div id="dash-sortable">
+    <div class="dash-block" data-id="metrics" draggable="true">
+      <div class="drag-handle" title="Arrastar">⠿</div>
+      <div class="metric-grid">
+        <div class="metric-card" onclick="showDetail('vendas')">
+          <div class="metric-label">Total Vendas</div>
+          <div class="metric-value">R$ 134.972</div>
+          <div class="metric-sub">Agosto 2026 ↗</div>
+        </div>
+        <div class="metric-card" onclick="showDetail('sanduiches')">
+          <div class="metric-label">Sanduíches</div>
+          <div class="metric-value">1.231</div>
+          <div class="metric-sub">unidades vendidas</div>
+        </div>
+        <div class="metric-card" onclick="showDetail('combos')">
+          <div class="metric-label">Combos</div>
+          <div class="metric-value">289</div>
+          <div class="metric-sub">= 367 brigadeiros</div>
+        </div>
+        <div class="metric-card" onclick="showDetail('topseller')">
+          <div class="metric-label">Top Seller</div>
+          <div class="metric-value" style="font-size:1.4rem">Frango</div>
+          <div class="metric-sub">366 unidades</div>
+        </div>
+      </div>
     </div>
-    <div class="metric-card" onclick="showDetail('sanduiches')">
-      <div class="metric-label">Sanduíches</div>
-      <div class="metric-value">1.231</div>
-      <div class="metric-sub">unidades vendidas</div>
+    <div class="dash-block" data-id="faturamento" draggable="true">
+      <div class="drag-handle" title="Arrastar">⠿</div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="chart-title">Faturamento Semanal — Agosto 2026</div>
+        <div class="chart-wrap"><canvas id="chart-anual"></canvas></div>
+      </div>
     </div>
-    <div class="metric-card" onclick="showDetail('combos')">
-      <div class="metric-label">Combos</div>
-      <div class="metric-value">289</div>
-      <div class="metric-sub">= 367 brigadeiros</div>
+    <div class="dash-block" data-id="top5" draggable="true">
+      <div class="drag-handle" title="Arrastar">⠿</div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="chart-title">Top Sanduíches — Agosto</div>
+        <div class="chart-wrap"><canvas id="chart-top"></canvas></div>
+      </div>
     </div>
-    <div class="metric-card" onclick="showDetail('topseller')">
-      <div class="metric-label">Top Seller</div>
-      <div class="metric-value" style="font-size:1.4rem">Frango</div>
-      <div class="metric-sub">366 unidades</div>
+    <div class="dash-block" data-id="projecao" draggable="true">
+      <div class="drag-handle" title="Arrastar">⠿</div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="chart-title" style="margin-bottom:0">Projeção de Crescimento</div>
+          <div style="display:flex;gap:8px" id="proj-filter">
+            <button type="button" class="filter-pill active" data-p="semanas" onclick="switchProj('semanas',this)">Semanas</button>
+            <button type="button" class="filter-pill" data-p="meses" onclick="switchProj('meses',this)">Meses</button>
+          </div>
+        </div>
+        <div id="proj-kpis" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap"></div>
+        <div class="chart-wrap"><canvas id="chart-proj"></canvas></div>
+      </div>
     </div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-title">Top Sanduíches — Agosto</div>
-    <div class="chart-wrap"><canvas id="chart-top"></canvas></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-title">Faturamento Semanal — Agosto 2026</div>
-    <div class="chart-wrap"><canvas id="chart-anual"></canvas></div>
   </div>
 </div>
 
@@ -639,14 +672,16 @@ function initDashboard() {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'}}}}
   });
 
+  // Faturamento semanal com datas reais de Agosto
+  const semDatas = ['01–07/08','08–14/08','15–21/08','22–31/08'];
   mkChart('chart-anual', {
     type:'bar',
     data:{
-      labels: SEMANAS.map(s=>s.label),
+      labels: semDatas,
       datasets:[{
         label:'Faturamento',
         data: SEMANAS.map(s=>s.valor),
-        backgroundColor:['#087A64','#F28EAA','#087A64','#087A64'],
+        backgroundColor: SEMANAS.map((_,i)=>i===1?'#F28EAA':'#087A64'),
         borderRadius:10, borderSkipped:false
       }]
     },
@@ -657,10 +692,141 @@ function initDashboard() {
         tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString('pt-BR')}}
       },
       scales:{
-        x:{grid:{display:false}},
+        x:{grid:{display:false},ticks:{color:'#B8D8CC'}},
         y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}
       }
     }
+  });
+
+  initProjecao('semanas');
+  initDashDrag();
+}
+
+// ── Projeção de Crescimento ────────────────────────────────────
+function initProjecao(mode) {
+  const semVals = SEMANAS.map(s=>s.valor);
+  const crescSem = semVals.map((v,i)=>i===0?0:((v-semVals[i-1])/semVals[i-1]*100));
+  const avgSemCresc = crescSem.slice(1).reduce((a,b)=>a+b,0)/3;
+
+  // Projeta 4 semanas futuras com média de crescimento
+  const projSem = [semVals[semVals.length-1]];
+  for(let i=1;i<=4;i++) projSem.push(Math.round(projSem[i-1]*(1+avgSemCresc/100)));
+
+  if(mode==='semanas') {
+    const labels = ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5*','Sem 6*','Sem 7*','Sem 8*'];
+    const realData  = [...semVals, null, null, null, null];
+    const projData  = [null, null, null, ...projSem];
+    const pct = avgSemCresc >= 0 ? '+'+avgSemCresc.toFixed(1)+'%' : avgSemCresc.toFixed(1)+'%';
+    document.getElementById('proj-kpis').innerHTML = `
+      <div style="background:rgba(8,122,100,.2);border:1px solid #087A64;border-radius:12px;padding:10px 16px;font-size:13px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:2px">Cresc. médio semanal</div>
+        <div style="color:#8BE6B2;font-weight:700">${pct}</div>
+      </div>
+      <div style="background:rgba(242,142,170,.1);border:1px solid var(--rosa);border-radius:12px;padding:10px 16px;font-size:13px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:2px">Projeção próx. semana</div>
+        <div style="color:var(--cream);font-weight:700">R$ ${projSem[1].toLocaleString('pt-BR')}</div>
+      </div>`;
+    mkChart('chart-proj',{
+      type:'line',
+      data:{labels,datasets:[
+        {label:'Realizado',data:realData,borderColor:'#FFF3D8',backgroundColor:'rgba(0,79,60,.3)',fill:true,tension:.4,pointBackgroundColor:'#FFF3D8',spanGaps:false,borderWidth:2},
+        {label:'Projeção',data:projData,borderColor:'#F28EAA',backgroundColor:'rgba(242,142,170,.1)',fill:true,tension:.4,borderDash:[6,4],pointBackgroundColor:'#F28EAA',spanGaps:false,borderWidth:2}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:true,labels:{color:'#B8D8CC',boxWidth:12,padding:16}},
+          tooltip:{callbacks:{label:ctx=>ctx.raw!=null?'R$ '+ctx.raw.toLocaleString('pt-BR'):''}}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}}
+      }
+    });
+  } else {
+    // modo meses: Ago realizado, Set-Dez projetado com +3%/mês
+    const labels = MESES_ANO.map(m=>m.label);
+    const realData = MESES_ANO.map((m,i)=>i<=7?m.valor:null);
+    const projData = MESES_ANO.map((m,i)=>{
+      if(i<7) return null;
+      return Math.round(134972*Math.pow(1.03,i-7));
+    });
+    const crescMes = ((projData[8]-134972)/134972*100).toFixed(1);
+    document.getElementById('proj-kpis').innerHTML = `
+      <div style="background:rgba(8,122,100,.2);border:1px solid #087A64;border-radius:12px;padding:10px 16px;font-size:13px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:2px">Cresc. projetado/mês</div>
+        <div style="color:#8BE6B2;font-weight:700">+3,0%</div>
+      </div>
+      <div style="background:rgba(242,142,170,.1);border:1px solid var(--rosa);border-radius:12px;padding:10px 16px;font-size:13px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:2px">Projeção Dezembro</div>
+        <div style="color:var(--cream);font-weight:700">R$ ${projData[11].toLocaleString('pt-BR')}</div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:13px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:2px">Cresc. Set vs Ago</div>
+        <div style="color:var(--cream);font-weight:700">+${crescMes}%</div>
+      </div>`;
+    mkChart('chart-proj',{
+      type:'line',
+      data:{labels,datasets:[
+        {label:'Realizado',data:realData,borderColor:'#FFF3D8',backgroundColor:'rgba(0,79,60,.3)',fill:true,tension:.4,pointBackgroundColor:'#FFF3D8',spanGaps:false,borderWidth:2},
+        {label:'Projeção (+3%/mês)',data:projData,borderColor:'#F28EAA',backgroundColor:'rgba(242,142,170,.1)',fill:true,tension:.4,borderDash:[6,4],pointBackgroundColor:'#F28EAA',spanGaps:false,borderWidth:2}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:true,labels:{color:'#B8D8CC',boxWidth:12,padding:16}},
+          tooltip:{callbacks:{label:ctx=>ctx.raw!=null?'R$ '+ctx.raw.toLocaleString('pt-BR'):''}}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}}
+      }
+    });
+  }
+}
+
+window.switchProj = function(mode, btn) {
+  document.querySelectorAll('#proj-filter .filter-pill').forEach(b=>{b.classList.remove('active');b.style.cssText='';});
+  btn.classList.add('active');
+  initProjecao(mode);
+};
+
+// ── Dashboard Drag & Drop ──────────────────────────────────────
+function initDashDrag() {
+  const container = document.getElementById('dash-sortable');
+  if(!container) return;
+
+  // Restaura ordem salva
+  const saved = JSON.parse(localStorage.getItem('foqui_dash_order')||'null');
+  if(saved) {
+    saved.forEach(id => {
+      const el = container.querySelector(`[data-id="${id}"]`);
+      if(el) container.appendChild(el);
+    });
+    // re-init charts after reorder
+    setTimeout(()=>{ Object.values(CHARTS).forEach(c=>c?.resize()); }, 100);
+  }
+
+  let dragged = null;
+  container.querySelectorAll('.dash-block').forEach(block => {
+    block.addEventListener('dragstart', e => {
+      dragged = block;
+      block.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    block.addEventListener('dragend', () => {
+      block.classList.remove('dragging');
+      container.querySelectorAll('.dash-block').forEach(b=>b.classList.remove('drag-over'));
+      // Salva nova ordem
+      const order = [...container.querySelectorAll('.dash-block')].map(b=>b.dataset.id);
+      localStorage.setItem('foqui_dash_order', JSON.stringify(order));
+    });
+    block.addEventListener('dragover', e => {
+      e.preventDefault();
+      if(block === dragged) return;
+      container.querySelectorAll('.dash-block').forEach(b=>b.classList.remove('drag-over'));
+      block.classList.add('drag-over');
+    });
+    block.addEventListener('drop', e => {
+      e.preventDefault();
+      if(block === dragged) return;
+      const blocks = [...container.querySelectorAll('.dash-block')];
+      const dragIdx = blocks.indexOf(dragged);
+      const dropIdx = blocks.indexOf(block);
+      if(dragIdx < dropIdx) container.insertBefore(dragged, block.nextSibling);
+      else container.insertBefore(dragged, block);
+      block.classList.remove('drag-over');
+    });
   });
 }
 
@@ -703,32 +869,42 @@ function renderVendas(period, m) {
     <div class="mini-card"><div class="mini-label">Crescimento</div><div class="mini-value delta-up">${crescimento}</div></div>
   `;
   let labels, data;
-  if(period === 'hoje') { labels=['9h','10h','11h','12h','13h','14h','15h','16h','17h','18h','19h','20h']; data=[420,680,890,1240,1560,1320,980,1100,1380,1560,1240,820]; }
-  else if(period === 'semana') { labels=SEMANAS.map(s=>s.label); data=SEMANAS.map(s=>Math.round(s.valor)); }
-  else if(period === 'mes') { labels=Array.from({length:31},(_,i)=>`${i+1}`); data=Array.from({length:31},()=>Math.round(134972/31+Math.random()*1000-500)); }
-  else {
-    // Apenas Agosto é dado real. Set-Dez são projeções com base em Ago + 3% a.m.
+  if(period === 'hoje') {
+    labels=['9h','10h','11h','12h','13h','14h','15h','16h','17h','18h','19h','20h'];
+    data=[420,680,890,1240,1560,1320,980,1100,1380,1560,1240,820];
+  } else if(period === 'semana') {
+    labels=['01–07/08','08–14/08','15–21/08','22–31/08'];
+    data=SEMANAS.map(s=>s.valor);
+  } else if(period === 'mes') {
+    labels=Array.from({length:31},(_,i)=>`${i+1}/08`);
+    data=Array.from({length:31},()=>Math.round(134972/31+(Math.random()*1000-500)));
+  } else {
     labels = MESES_ANO.map(m=>m.label);
-    const realIdx = 7; // Agosto
     const baseVal = 134972;
-    const realData = MESES_ANO.map((m,i) => i <= realIdx ? (m.valor||null) : null);
-    const projData = MESES_ANO.map((m,i) => i >= realIdx ? Math.round(baseVal * Math.pow(1.03, i - realIdx)) : null);
-    data = realData;
+    const realData = MESES_ANO.map((m,i) => i <= 7 ? (m.valor||null) : null);
+    const projData = MESES_ANO.map((_,i) => i >= 7 ? Math.round(baseVal * Math.pow(1.03, i-7)) : null);
     mkChart('chart-vendas-linha', {
       type:'line',
       data:{labels, datasets:[
-        {label:'Confirmado',data:realData,borderColor:'#FFF3D8',backgroundColor:'rgba(0,79,60,0.3)',fill:true,tension:.4,pointBackgroundColor:'#FFF3D8',spanGaps:false},
-        {label:'Projeção (+3%/mês)',data:projData,borderColor:'#F28EAA',backgroundColor:'rgba(242,142,170,0.1)',fill:true,tension:.4,borderDash:[6,4],pointBackgroundColor:'#F28EAA',spanGaps:false}
+        {label:'Confirmado',data:realData,borderColor:'#FFF3D8',backgroundColor:'rgba(0,79,60,0.3)',fill:true,tension:.4,pointBackgroundColor:'#FFF3D8',spanGaps:false,borderWidth:2},
+        {label:'Projeção (+3%/mês)',data:projData,borderColor:'#F28EAA',backgroundColor:'rgba(242,142,170,0.1)',fill:true,tension:.4,borderDash:[6,4],pointBackgroundColor:'#F28EAA',spanGaps:false,borderWidth:2}
       ]},
       options:{responsive:true,maintainAspectRatio:false,
-        plugins:{
-          legend:{display:true,labels:{color:'#B8D8CC',boxWidth:12,padding:16}},
-          tooltip:{callbacks:{label:ctx=>'R$ '+(ctx.raw||0).toLocaleString('pt-BR')}}
-        },
+        plugins:{legend:{display:true,labels:{color:'#B8D8CC',boxWidth:12,padding:16}},
+          tooltip:{callbacks:{label:ctx=>ctx.raw!=null?'R$ '+ctx.raw.toLocaleString('pt-BR'):''}}},
         scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}}
       }
     });
+    return;
   }
+  mkChart('chart-vendas-linha', {
+    type:'bar',
+    data:{labels, datasets:[{label:'Faturamento',data,backgroundColor:'#087A64',borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString('pt-BR')}}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>'R$'+Math.round(v/1000)+'k'}}}
+    }
+  });
 }
 
 function renderSanduiches(m) {

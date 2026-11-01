@@ -850,7 +850,7 @@ async function logAction(acao, detalhes={}){
   try{await window._supabase.from('audit_logs').insert({
     usuario_id:window._session.user.id,
     usuario_email:window._session.user.email,
-    acao, detalhes, criado_em:new Date().toISOString()
+    acao, detalhes:Object.assign({painel:'producao'},detalhes), criado_em:new Date().toISOString()
   });}catch(e){}
 }
 function selMod(btn,id){document.querySelectorAll('.mod-card').forEach(b=>b.setAttribute('aria-pressed','false'));btn.setAttribute('aria-pressed','true');setTimeout(()=>go(id),160);}
