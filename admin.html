@@ -396,7 +396,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
 
 <!-- ══ PROGRAMAÇÃO ══ -->
 <div class="tab-content" id="tab-programacao">
-  <div class="page-header"><h1 class="page-title">Programação</h1><p class="page-sub">Calendário semanal de produção</p></div>
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;"><div><h1 class="page-title">Programação</h1><p class="page-sub">Calendário semanal de produção</p></div><button type="button" id="btn-edit-prog" onclick="toggleEditMode('prog')" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:8px 16px;color:var(--muted);font-family:'Ohno',Georgia,serif;font-size:13px;cursor:pointer;">✏️ Editar</button></div>
   <div class="chart-card">
     <div class="tbl-wrap">
       <table><thead><tr><th>Dia</th><th>Horário</th><th>Produção</th><th>Quantidade</th></tr></thead>
@@ -407,7 +407,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
 
 <!-- ══ ESTOQUE ══ -->
 <div class="tab-content" id="tab-estoque">
-  <div class="page-header"><h1 class="page-title">Estoque</h1><p class="page-sub">Níveis por categoria</p></div>
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;"><div><h1 class="page-title">Estoque</h1><p class="page-sub">Níveis por categoria</p></div><button type="button" id="btn-edit-est" onclick="toggleEditMode('est')" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:8px 16px;color:var(--muted);font-family:'Ohno',Georgia,serif;font-size:13px;cursor:pointer;">✏️ Editar</button></div>
   <div id="est-adm-cats"></div>
 </div>
 
@@ -453,7 +453,7 @@ tr:hover td{background:rgba(255,255,255,.03);}
 <div class="modal-overlay" id="modal-receita">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modal-rec-title"></div>
+      <div style="display:flex;align-items:center;gap:12px;flex:1"><div class="modal-title" id="modal-rec-title"></div><button type="button" id="btn-edit-rec" onclick="toggleEditMode('rec')" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:4px 12px;color:var(--muted);font-family:'Ohno',Georgia,serif;font-size:12px;cursor:pointer;">✏️ Editar</button></div>
       <button class="btn-close" onclick="closeModal()">✕</button>
     </div>
     <div id="modal-rec-body"></div>
@@ -914,14 +914,16 @@ window.openModal = function(nome) {
     const val = recOverrides[n] || v;
     return `<div class="ing-row-adm" style="display:flex;align-items:center;gap:8px;">
       <span style="flex:1">${n}</span>
-      <span id="ing-val-${i}" style="color:var(--rosa)">${val}</span>
-      <button type="button" onclick="editIng('${rec.nome}','${n}',${i})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px 4px;" title="Editar">✏️</button>
+      <span id="ing-val-${i}" data-ing="${n}" style="color:var(--rosa)">${val}</span>
     </div>`;
   }).join('');
   document.getElementById('modal-rec-title').setAttribute('data-rec', rec.nome);
   document.getElementById('modal-receita').classList.add('open');
 };
-window.closeModal = function() { document.getElementById('modal-receita').classList.remove('open'); };
+window.closeModal = function() {
+  document.getElementById('modal-receita').classList.remove('open');
+  if(_editMode['rec']) { _editMode['rec']=false; const b=document.getElementById('btn-edit-rec'); if(b){b.textContent='✏️ Editar';b.style.color='var(--muted)';b.style.borderColor='var(--border)';} }
+};
 document.getElementById('modal-receita').addEventListener('click', e => { if(e.target.id==='modal-receita') closeModal(); });
 
 // ── Programação ────────────────────────────────────────────────
@@ -938,9 +940,9 @@ function initProgramacao() {
       const itH    = (progOverrides[key]||{}).h    || it.h;
       rows.push(`<tr>
         ${i===0 ? `<td class="prog-day" rowspan="${items.length}">${DIAS_NOME[dow]}</td>` : ''}
-        <td><span id="prog-h-${key}">${itH}</span> <button type="button" onclick="editProg('${key}','h','${itH}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button></td>
-        <td><span id="prog-n-${key}">${itNome}</span> <button type="button" onclick="editProg('${key}','nome','${itNome}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button></td>
-        <td style="color:var(--rosa)"><span id="prog-q-${key}">${itQty}</span> <button type="button" onclick="editProg('${key}','qty','${itQty}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button></td>
+        <td><span id="prog-h-${key}">${itH}</span></td>
+        <td><span id="prog-n-${key}">${itNome}</span></td>
+        <td style="color:var(--rosa)"><span id="prog-q-${key}">${itQty}</span></td>
       </tr>`);
     });
   });
@@ -949,85 +951,106 @@ function initProgramacao() {
 
 // ── Estoque ────────────────────────────────────────────────────
 // ── Funções de edição inline ───────────────────────────────────
-window.editIng = function(recNome, ingNome, idx) {
-  const el = document.getElementById('ing-val-'+idx);
-  if(!el) return;
-  const cur = el.textContent;
-  const input = document.createElement('input');
-  input.value = cur;
-  input.style.cssText = 'width:80px;background:var(--card-inset);border:1.5px solid var(--rosa);border-radius:6px;padding:2px 6px;color:var(--cream);font-size:13px;outline:none';
-  el.replaceWith(input);
-  input.focus();
-  input.select();
-  function save() {
-    const val = input.value.trim() || cur;
-    const span = document.createElement('span');
-    span.id = 'ing-val-'+idx;
-    span.style.color = 'var(--rosa)';
-    span.textContent = val;
-    input.replaceWith(span);
-    const overrides = JSON.parse(localStorage.getItem('foqui_rec_overrides')||'{}');
-    if(!overrides[recNome]) overrides[recNome] = {};
-    overrides[recNome][ingNome] = val;
-    localStorage.setItem('foqui_rec_overrides', JSON.stringify(overrides));
-    // Sync para producao-tablet: flag de refresh
-    localStorage.setItem('foqui_rec_updated', Date.now().toString());
+// ── Modo edição em bloco ───────────────────────────────────────
+var _editMode = {};
+window.toggleEditMode = function(section) {
+  _editMode[section] = !_editMode[section];
+  const on = _editMode[section];
+  const btn = document.getElementById('btn-edit-'+section);
+  if(btn) { btn.textContent = on ? '✓ Salvar' : '✏️ Editar'; btn.style.color = on ? 'var(--rosa)' : 'var(--muted)'; btn.style.borderColor = on ? 'var(--rosa)' : 'var(--border)'; }
+  if(section === 'prog') applyProgEditMode(on);
+  if(section === 'est')  applyEstEditMode(on);
+  if(section === 'rec')  applyRecEditMode(on);
+  if(!on) {
+    localStorage.setItem('foqui_'+section+'_updated', Date.now().toString());
   }
-  input.addEventListener('blur', save);
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){ input.value=cur; input.blur(); }});
 };
 
-window.editProg = function(key, field, cur) {
-  const el = document.getElementById('prog-'+field[0]+'-'+key);
-  if(!el) return;
-  const input = document.createElement('input');
-  input.value = cur;
-  input.style.cssText = 'width:'+(field==='nome'?'130':'60')+'px;background:var(--card-inset);border:1.5px solid var(--rosa);border-radius:6px;padding:2px 6px;color:var(--cream);font-size:13px;outline:none';
-  el.replaceWith(input);
-  input.focus(); input.select();
-  function save() {
-    const val = input.value.trim() || cur;
-    const span = document.createElement('span');
-    span.id = 'prog-'+field[0]+'-'+key;
-    span.textContent = val;
-    input.replaceWith(span);
-    const overrides = JSON.parse(localStorage.getItem('foqui_prog_overrides')||'{}');
-    if(!overrides[key]) overrides[key] = {};
-    overrides[key][field] = val;
-    localStorage.setItem('foqui_prog_overrides', JSON.stringify(overrides));
-    localStorage.setItem('foqui_prog_updated', Date.now().toString());
-  }
-  input.addEventListener('blur', save);
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){ input.value=cur; input.blur(); }});
-};
+function makeEditable(el, opts) {
+  const inp = document.createElement('input');
+  inp.value = el.textContent;
+  if(opts.type) inp.type = opts.type;
+  inp.style.cssText = 'width:'+(opts.w||'100%')+';background:var(--card-inset);border:1px solid var(--rosa);border-radius:6px;padding:3px 7px;color:var(--cream);font-size:inherit;font-family:inherit;outline:none;box-sizing:border-box;';
+  inp.dataset.key = opts.key || '';
+  inp.dataset.orig = el.textContent;
+  if(el.dataset.ing) inp.dataset.ing = el.dataset.ing;
+  el.replaceWith(inp);
+  return inp;
+}
 
-window.editEst = function(key, nome, cur) {
-  const safeKey = key.replace(/\s/g,'_');
-  const el = document.getElementById('est-val-'+safeKey);
-  if(!el) return;
-  const input = document.createElement('input');
-  input.value = cur;
-  input.type = 'number'; input.min = '0';
-  input.style.cssText = 'width:70px;background:var(--card-inset);border:1.5px solid var(--rosa);border-radius:6px;padding:2px 6px;color:var(--cream);font-size:13px;outline:none';
-  el.replaceWith(input);
-  input.focus(); input.select();
-  function save() {
-    const val = input.value.trim() || cur;
-    const span = document.createElement('span');
-    span.id = 'est-val-'+safeKey;
-    span.style.color = 'var(--muted)'; span.style.fontSize = '11px';
-    span.textContent = val+'%';
-    input.replaceWith(span);
-    // Salva no mesmo localStorage que producao-tablet usa
-    const est = JSON.parse(localStorage.getItem('foqui_estoque')||'{}');
-    est[nome] = parseFloat(val);
-    localStorage.setItem('foqui_estoque', JSON.stringify(est));
-    localStorage.setItem('foqui_est_updated', Date.now().toString());
-  }
-  input.addEventListener('blur', save);
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); if(e.key==='Escape'){ input.value=cur; input.blur(); }});
-};
-// ── /Funções de edição inline ──────────────────────────────────
+function restoreSpan(inp, style) {
+  const sp = document.createElement('span');
+  sp.textContent = inp.value || inp.dataset.orig;
+  if(style) sp.style.cssText = style;
+  inp.replaceWith(sp);
+  return sp;
+}
+
+function applyProgEditMode(on) {
+  const tbody = document.getElementById('tbl-prog');
+  if(!tbody) return;
+  const overrides = JSON.parse(localStorage.getItem('foqui_prog_overrides')||'{}');
+  tbody.querySelectorAll('[id^="prog-"]').forEach(el => {
+    const id = el.id; // prog-h-0-0, prog-n-0-0, prog-q-0-0
+    if(on) {
+      const inp = makeEditable(el, {w: id.includes('-n-') ? '120px' : '60px', key: id});
+      inp.id = id;
+    } else {
+      if(el.tagName === 'INPUT') {
+        const parts = id.split('-'); // ['prog','h','dow','idx']
+        const key = parts[2]+'-'+parts[3];
+        const field = parts[1]==='h'?'h':parts[1]==='n'?'nome':'qty';
+        if(!overrides[key]) overrides[key]={};
+        overrides[key][field] = el.value;
+        const sp = restoreSpan(el, id.includes('-q-') ? 'color:var(--rosa)' : '');
+        sp.id = id;
+      }
+    }
+  });
+  if(!on) localStorage.setItem('foqui_prog_overrides', JSON.stringify(overrides));
+}
+
+function applyEstEditMode(on) {
+  const overrides = JSON.parse(localStorage.getItem('foqui_estoque')||'{}');
+  document.querySelectorAll('[id^="est-val-"]').forEach(el => {
+    if(on) {
+      const inp = makeEditable(el, {type:'number', w:'70px', key:el.id});
+      inp.id = el.id;
+      inp.value = el.textContent.replace('%','').trim();
+    } else {
+      if(el.tagName === 'INPUT') {
+        const itemName = el.id.replace('est-val-','').replace(/_/g,' ');
+        overrides[itemName] = parseFloat(el.value)||0;
+        const sp = restoreSpan(el, 'color:var(--muted);font-size:11px');
+        sp.textContent = el.value+'%';
+        sp.id = el.id;
+      }
+    }
+  });
+  if(!on) localStorage.setItem('foqui_estoque', JSON.stringify(overrides));
+}
+
+function applyRecEditMode(on) {
+  const recNome = document.getElementById('modal-rec-title')?.getAttribute('data-rec') || '';
+  const overrides = JSON.parse(localStorage.getItem('foqui_rec_overrides')||'{}');
+  if(!overrides[recNome]) overrides[recNome]={};
+  document.querySelectorAll('[id^="ing-val-"]').forEach(el => {
+    if(on) {
+      const inp = makeEditable(el, {w:'90px', key:el.id});
+      inp.id = el.id;
+      inp.style.color = 'var(--rosa)';
+    } else {
+      if(el.tagName === 'INPUT') {
+        const ingNome = el.dataset.ing || el.closest('.ing-row-adm')?.querySelector('span:first-child')?.textContent || '';
+        if(ingNome) overrides[recNome][ingNome] = el.value;
+        const sp = restoreSpan(el, 'color:var(--rosa)');
+        sp.id = el.id;
+      }
+    }
+  });
+  if(!on) localStorage.setItem('foqui_rec_overrides', JSON.stringify(overrides));
+}
+// ── /Modo edição em bloco ──────────────────────────────────────
 
 window.loadEstoque = async function() {
   let estData = {};
@@ -1052,7 +1075,7 @@ window.loadEstoque = async function() {
             <div style="display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:5px">
               <span style="flex:1">${item}</span>
               <span id="est-val-${estKey.replace(/\s/g,'_')}" style="color:var(--muted);font-size:11px">${qty||pct+'%'}</span>
-              <button type="button" onclick="editEst('${estKey}','${item}',${qty||pct})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11px;" title="Editar">✏️</button>
+             
             </div>
             <div style="background:rgba(255,255,255,.07);border-radius:4px;height:4px"><div style="background:${color};width:${pct}%;height:100%;border-radius:4px;transition:width .4s"></div></div>
           </div>`;
