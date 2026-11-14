@@ -1,4 +1,4 @@
-const CACHE = 'foqui-v49';
+const CACHE = 'foqui-v50';
 const STATIC = [
   '/', '/producao', '/finalizacao', '/atendimento', '/login', '/admin',
   '/index.html', '/producao-tablet.html', '/finalizacao-tablet.html',
@@ -27,7 +27,9 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  if (e.request.url.includes('/api/')) return; // sempre rede para API
+  const url = e.request.url;
+  // Nunca cachear: API routes, Supabase (dados autenticados), CDNs externos
+  if (url.includes('/api/') || url.includes('supabase.co') || url.includes('esm.sh') || url.includes('qrserver.com')) return;
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(resp => {
       const clone = resp.clone();

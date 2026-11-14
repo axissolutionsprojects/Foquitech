@@ -1028,7 +1028,7 @@ function sv(k,d){localStorage.setItem(k,JSON.stringify(d));}
 (function(){
   var hasToken=Object.keys(localStorage).some(function(k){return k.startsWith('sb-')&&k.endsWith('auth-token');});
   if(!hasToken){location.replace('login.html');return;}
-  import('https://esm.sh/@supabase/supabase-js@2').then(function(m){
+  import('https://esm.sh/@supabase/supabase-js@2.49.1').then(function(m){
     var sb=m.createClient(SB_URL,SB_ANON);
     sb.auth.getSession().then(function(r){
       var session=r.data&&r.data.session;
@@ -1043,7 +1043,10 @@ function sv(k,d){localStorage.setItem(k,JSON.stringify(d));}
         pill.parentNode.insertBefore(w,pill);
         var b=document.createElement('div');
         b.style.cssText='display:flex;align-items:center;gap:6px;border:1.5px solid #F28EAA;border-radius:20px;padding:4px 12px 4px 8px;font-size:12px;color:#FFF3D8;font-family:"Ohno",Georgia,serif;white-space:nowrap;';
-        b.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:#F28EAA;flex-shrink:0;display:inline-block;"></span><span>'+nome+'</span>';
+        const dot=document.createElement('span');dot.style.cssText='width:6px;height:6px;border-radius:50%;background:#F28EAA;flex-shrink:0;display:inline-block;';
+        const nameSpan=document.createElement('span');nameSpan.textContent=nome;
+        const syncDot=document.createElement('span');syncDot.id='sync-status';syncDot.style.cssText='font-size:11px;opacity:.7;margin-left:4px;';syncDot.title='Estado de sincronização';
+        b.appendChild(dot);b.appendChild(nameSpan);b.appendChild(syncDot);
         w.appendChild(b);w.appendChild(pill);
       });
       init();
@@ -1051,8 +1054,16 @@ function sv(k,d){localStorage.setItem(k,JSON.stringify(d));}
   });
 })();
 function doLogout(){
-  Object.keys(localStorage).forEach(function(k){if(k.startsWith('sb-'))localStorage.removeItem(k);});
+  Object.keys(localStorage).forEach(function(k){
+    if(k.startsWith('sb-')||k.startsWith('foqui_'))localStorage.removeItem(k);
+  });
   sessionStorage.clear();location.replace('login.html');
+}
+function _showToast(msg,icon){
+  var t=document.getElementById('at-toast');
+  if(!t){t=document.createElement('div');t.id='at-toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(20,10,10,.95);border:1.5px solid rgba(242,142,170,.4);border-radius:16px;padding:12px 20px;font-family:"Heading",Arial,sans-serif;font-size:13px;color:#FFF3D8;z-index:9998;pointer-events:none;transition:opacity .3s;max-width:calc(100vw - 48px);text-align:center;';document.body.appendChild(t);}
+  t.textContent=(icon?icon+' ':'')+msg;t.style.opacity='1';
+  clearTimeout(t._timer);t._timer=setTimeout(function(){t.style.opacity='0';},4000);
 }
 function goBack(url){sessionStorage.setItem('vt-back','1');location.href=url;}
 
@@ -1107,10 +1118,18 @@ function loadResp(tab,date){
 }
 /* Upsert progressivo — chamado em cada check e em cada foto enviada */
 let _upsertTimer={};
+function _syncUI(state){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  if(state==='saving'){el.textContent='↻';el.style.color='#F3C65E';}
+  else if(state==='ok'){el.textContent='✓';el.style.color='#8BE6B2';setTimeout(()=>{if(el.textContent==='✓')el.textContent='';},3000);}
+  else if(state==='err'){el.textContent='⚠';el.style.color='#F28EAA';}
+}
 function upsertSessao(tab){
   clearTimeout(_upsertTimer[tab]);
+  _syncUI('saving');
   _upsertTimer[tab]=setTimeout(async()=>{
-    if(!window._supabase||!window._session)return;
+    if(!window._supabase||!window._session){_syncUI('err');return;}
     const uid=window._session.user.id;
     const nome=_atResp[tab]||window._nomeUsuario||'—';
     const itens=ld('foqui_atend_'+tab+'_'+_uidKey+'_'+TODAY);
@@ -1126,9 +1145,11 @@ function upsertSessao(tab){
       concluido_at:(existing&&existing[tab])||null
     };
     try{
-      await window._supabase.from('atendimento_sessoes')
+      const{error}=await window._supabase.from('atendimento_sessoes')
         .upsert(payload,{onConflict:'user_id,data,tab'});
-    }catch(e){console.warn('upsertSessao:',e.message);}
+      if(error)throw error;
+      _syncUI('ok');
+    }catch(e){console.warn('upsertSessao:',e.message);_syncUI('err');}
   },800);
 }
 
@@ -1192,7 +1213,7 @@ async function concluirTurno(tab){
   const fIds=tab==='fech'?FECH_FOTO:ABER_FOTO;
   const fotoChk=ld('foqui_at_foto_'+_uidKey+'_'+TODAY);
   const missingF=fIds.filter(fid=>!fotoChk[fid]);
-  if(missingF.length){btn.textContent='Concluir turno';btn.classList.add('ready');alert(missingF.length+' foto(s) obrigatória(s) não tirada(s). Tire todas as fotos antes de concluir.');return;}
+  if(missingF.length){btn.textContent='Concluir turno';btn.classList.add('ready');_showToast(missingF.length+' foto'+(missingF.length>1?'s':'')+' obrigatória'+(missingF.length>1?'s':'')+' não tirada'+(missingF.length>1?'s':'')+'. Rolar para cima e tirar antes de concluir.','⚠');return;}
   const fotos=ld('foqui_at_foto_url_'+_uidKey+'_'+TODAY);
   const fotosFilt={};ids.forEach(id=>{if(fotos[id])fotosFilt[id]=fotos[id];});
   const d=new Date();
@@ -1214,7 +1235,7 @@ async function concluirTurno(tab){
     showConcluirPopup(tab);
   }catch(e){
     btn.textContent='Concluir turno';btn.classList.add('ready');
-    alert('Erro ao salvar: '+e.message);
+    _showToast('Erro ao salvar: '+e.message,'⚠');
   }
 }
 
@@ -1245,6 +1266,7 @@ function viewFoto(iid){
 async function uploadFoto(iid,tab,b64){
   if(!window._supabase||!window._session)return;
   const statusEl=document.getElementById('fstatus-'+iid);
+  if(statusEl){statusEl.textContent='↻';statusEl.style.color='#F3C65E';statusEl.onclick=null;}
   try{
     const blob=await(await fetch(b64)).blob();
     const d=new Date();
@@ -1253,14 +1275,17 @@ async function uploadFoto(iid,tab,b64){
     const path=`${uid}/${dateStr}/${tab}/${iid}_${Date.now()}.jpg`;
     const {error}=await window._supabase.storage.from('atendimento').upload(path,blob,{contentType:'image/jpeg',upsert:true});
     if(error)throw error;
-    const {data:pub}=window._supabase.storage.from('atendimento').getPublicUrl(path);
-    const urls=ld('foqui_at_foto_url_'+_uidKey+'_'+TODAY);urls[iid]=pub.publicUrl;sv('foqui_at_foto_url_'+_uidKey+'_'+TODAY,urls);
-    await window._supabase.from('atendimento_fotos').upsert({user_id:uid,data:dateStr,tab,item_id:iid,foto_url:pub.publicUrl,updated_at:new Date().toISOString()},{onConflict:'user_id,data,tab,item_id'});
-    if(statusEl)statusEl.textContent='✓';
+    // Salva o path (não a URL pública) — bucket é privado, signed URLs gerados sob demanda
+    const urls=ld('foqui_at_foto_url_'+_uidKey+'_'+TODAY);urls[iid]=path;sv('foqui_at_foto_url_'+_uidKey+'_'+TODAY,urls);
+    await window._supabase.from('atendimento_fotos').upsert({user_id:uid,data:dateStr,tab,item_id:iid,foto_url:path,updated_at:new Date().toISOString()},{onConflict:'user_id,data,tab,item_id'});
+    if(statusEl){statusEl.textContent='✓';statusEl.style.color='#8BE6B2';statusEl.onclick=null;}
     upsertSessao(tab);
   }catch(err){
     console.warn('Upload:',err);
-    if(statusEl)statusEl.textContent='⚠';
+    if(statusEl){
+      statusEl.textContent='⚠ tentar de novo';statusEl.style.color='#F28EAA';statusEl.style.cursor='pointer';
+      statusEl.onclick=()=>{const b64l=ld('foqui_at_foto_'+_uidKey+'_'+TODAY)[iid];if(b64l)uploadFoto(iid,tab,b64l);};
+    }
   }
 }
 

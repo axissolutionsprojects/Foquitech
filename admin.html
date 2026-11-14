@@ -813,13 +813,14 @@ tr:hover td{background:rgba(255,255,255,.03);}
 </div>
 
 <script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 const sb = createClient('https://dmqvxrvazwtpqzkgxhcb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtcXZ4cnZhend0cHF6a2d4aGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTI2MTMsImV4cCI6MjEwOTAyODYxM30.2O7Kqf0jPQeS7pfaZBtMV8FJf81IYoFJf1_Y5GkYS00');
 
 // ── Auth Guard ────────────────────────────────────────────────
 const { data: { session } } = await sb.auth.getSession();
 if(!session){ location.replace('login.html'); throw new Error('no session'); }
-const perfil = session.user.user_metadata?.perfil || session.user.app_metadata?.perfil;
+// Verificar SOMENTE app_metadata — user_metadata é alterável pelo próprio usuário
+const perfil = session.user.app_metadata?.perfil;
 if(perfil !== 'admin'){ location.replace('index.html'); throw new Error('not admin'); }
 window._supabase = sb;
 window._sb = sb;
@@ -829,9 +830,22 @@ window._session = session;
 // Nome do usuário na topbar
 document.getElementById('topbar-user').textContent = session.user.user_metadata?.nome || session.user.email?.split('@')[0] || '';
 
+// ── Sanitização anti-XSS ──────────────────────────────────────
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ── Fetch com Authorization header ────────────────────────────
+function _authFetch(url, opts = {}) {
+  const token = window._session?.access_token;
+  const headers = { ...(opts.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+  return fetch(url, { ...opts, headers });
+}
+
 // ── Logout ────────────────────────────────────────────────────
 document.getElementById('btn-logout').addEventListener('click', async () => {
   await sb.auth.signOut();
+  Object.keys(localStorage).filter(k => k.startsWith('foqui_') || k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
   location.replace('login.html');
 });
 
@@ -1813,16 +1827,16 @@ window.loadUsuarios = async function() {
   const tbody = document.getElementById('tbl-users');
   tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Carregando...</td></tr>';
   try {
-    const resp = await fetch('/api/get-users');
+    const resp = await _authFetch('/api/get-users');
     const data = await resp.json();
     if(!resp.ok) throw new Error(data.error || 'Erro ao buscar usuários');
     if(!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Nenhum usuário</td></tr>'; return; }
     data.sort((a,b)=>(a.nome||'').localeCompare(b.nome||'','pt-BR'));
     tbody.innerHTML = data.map(u=>`
       <tr onclick="openUserModal(${JSON.stringify(u).replace(/"/g,'&quot;')})" style="cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
-        <td>${u.nome||'—'}</td>
-        <td style="color:var(--muted);font-size:12px">${u.email?.split('@')[0]||u.id?.slice(0,8)||'—'}</td>
-        <td><span class="badge ${u.perfil==='admin'?'badge-admin':'badge-op'}">${u.perfil||'operador'}</span></td>
+        <td>${esc(u.nome||'—')}</td>
+        <td style="color:var(--muted);font-size:12px">${esc(u.email?.split('@')[0]||u.id?.slice(0,8)||'—')}</td>
+        <td><span class="badge ${u.perfil==='admin'?'badge-admin':'badge-op'}">${esc(u.perfil||'operador')}</span></td>
         <td><span style="color:#8BE6B2;font-size:12px">● Ativo</span></td>
       </tr>
     `).join('');
@@ -1839,7 +1853,7 @@ window.criarUsuario = async function() {
   if(senha.length < 6) { msg.className='form-msg err'; msg.textContent='Senha deve ter mínimo 6 caracteres.'; return; }
   msg.className='form-msg'; msg.textContent='Criando...';
   try {
-    const r = await fetch('/api/create-user', {
+    const r = await _authFetch('/api/create-user', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({email:`${user}@foquitech.internal`, password:senha, nome, perfil})
@@ -1895,7 +1909,7 @@ window.excluirUsuario = async function() {
   const msg = document.getElementById('mu-msg');
   msg.style.color='var(--muted)'; msg.textContent='Excluindo...';
   try {
-    const r = await fetch(`/api/delete-user?uid=${_muUser.id}`, { method:'DELETE' });
+    const r = await _authFetch(`/api/delete-user?uid=${_muUser.id}`, { method:'DELETE' });
     const d = await r.json();
     if(!r.ok) throw new Error(d.error||'Erro');
     closeUserModal();
@@ -1912,7 +1926,7 @@ window.salvarUsuario = async function() {
   if(!nome) { msg.style.color='var(--rosa)'; msg.textContent='Nome obrigatório.'; return; }
   msg.style.color='var(--muted)'; msg.textContent='Salvando...';
   try {
-    const r = await fetch('/api/update-user', {
+    const r = await _authFetch('/api/update-user', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ uid: _muUser.id, nome, perfil, senha })
     });
@@ -2012,7 +2026,7 @@ function _renderAtRelList() {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div>
           <div style="font-family:'Ohno',Georgia,serif;font-size:0.95rem;color:var(--cream);">${dw}, ${label}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:3px;">${r.responsavel||'—'} · ${nItens} itens · ${nFotos} foto${nFotos!==1?'s':''}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(r.responsavel||'—')} · ${nItens} itens · ${nFotos} foto${nFotos!==1?'s':''}</div>
         </div>
         ${badgeHtml}
       </div>
@@ -2094,7 +2108,7 @@ async function showAtendDet(date) {
 
   body.innerHTML = `
     <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
-      <div><span style="font-size:11px;color:var(--muted);">RESPONSÁVEL</span><div style="font-family:'Ohno',Georgia,serif;color:var(--cream);margin-top:2px;">${r.responsavel||'—'}</div></div>
+      <div><span style="font-size:11px;color:var(--muted);">RESPONSÁVEL</span><div style="font-family:'Ohno',Georgia,serif;color:var(--cream);margin-top:2px;">${esc(r.responsavel||'—')}</div></div>
       <div><span style="font-size:11px;color:var(--muted);">ITENS CONCLUÍDOS</span><div style="font-family:'Ohno',Georgia,serif;color:var(--verde);margin-top:2px;">${nItens} / ${totalItens}</div></div>
       <div style="margin-left:auto;">${statusHtml}</div>
     </div>
@@ -2118,7 +2132,7 @@ async function showAtendDet(date) {
         const safeSu = su.replace(/'/g,'%27');
         return `<div style="text-align:center;cursor:pointer;" onclick="openPhotoLightbox('${safeSu}','${safeLabel}')">
           <img src="${su}" style="width:100px;height:76px;border-radius:10px;object-fit:cover;border:1px solid var(--border);" onerror="this.style.opacity='.3'">
-          <div style="font-size:10px;color:var(--muted);margin-top:3px;">${f.item_id}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;">${esc(f.item_id)}</div>
         </div>`;
       }).join('');
     }
@@ -2192,12 +2206,13 @@ function closePhotoLightbox() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePhotoLightbox(); });
 
-function _storagePath(url) {
+function _storagePath(ref) {
+  if (!ref) return null;
+  if (!ref.startsWith('http')) return ref; // já é um path relativo (novo formato)
   const marker = '/object/';
-  const idx = url.indexOf(marker);
+  const idx = ref.indexOf(marker);
   if (idx === -1) return null;
-  const parts = url.slice(idx + marker.length).split('/');
-  // parts: ["public"|"sign", "<bucket>", ...path]
+  const parts = ref.slice(idx + marker.length).split('/');
   if (parts.length < 3) return null;
   return parts.slice(2).join('/');
 }

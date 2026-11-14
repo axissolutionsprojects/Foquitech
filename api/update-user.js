@@ -1,13 +1,12 @@
+const verifyAdmin = require('./_auth');
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
+  if (!await verifyAdmin(req)) return res.status(403).json({ error: 'Acesso negado' });
 
   const { uid, nome, perfil, senha } = req.body;
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;
-
-  if (!SERVICE_KEY || !SUPABASE_URL) {
-    return res.status(500).json({ error: 'Variáveis não configuradas' });
-  }
+  const { SUPABASE_URL, SUPABASE_SERVICE_KEY: SERVICE_KEY } = process.env;
+  if (!SERVICE_KEY || !SUPABASE_URL) return res.status(500).json({ error: 'Variáveis não configuradas' });
 
   const headers = {
     'Content-Type': 'application/json',
@@ -16,7 +15,7 @@ module.exports = async function handler(req, res) {
   };
 
   try {
-    // Atualiza perfil na tabela profiles
+    // Atualiza tabela profiles
     const pRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}`, {
       method: 'PATCH',
       headers,
@@ -27,17 +26,17 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: d.message || 'Erro ao atualizar perfil' });
     }
 
-    // Atualiza senha via Admin API (só se informada)
-    if (senha && senha.length >= 6) {
-      const aRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${uid}`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({ password: senha })
-      });
-      if (!aRes.ok) {
-        const d = await aRes.json().catch(() => ({}));
-        return res.status(400).json({ error: d.message || 'Erro ao atualizar senha' });
-      }
+    // Atualiza app_metadata (perfil) + senha via Admin API
+    const adminBody = { app_metadata: { perfil } };
+    if (senha && senha.length >= 6) adminBody.password = senha;
+    const aRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${uid}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(adminBody)
+    });
+    if (!aRes.ok) {
+      const d = await aRes.json().catch(() => ({}));
+      return res.status(400).json({ error: d.message || 'Erro ao atualizar usuário' });
     }
 
     return res.status(200).json({ ok: true });
