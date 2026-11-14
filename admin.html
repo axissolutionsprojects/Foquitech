@@ -2091,12 +2091,6 @@ async function showAtendDet(date) {
     : `<span style="background:rgba(243,198,94,.1);border:1.5px solid rgba(243,198,94,.35);border-radius:20px;padding:4px 12px;color:#F3C65E;font-size:12px;font-weight:700;">↻ Em andamento — ${pct}%</span>`;
 
   const fotosArr = fotosDB || [];
-  const fotoHtml = fotosArr.length
-    ? `<div style="margin-top:16px;"><div style="font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Fotos registradas (${fotosArr.length})</div>
-       <div style="display:flex;flex-wrap:wrap;gap:8px;">
-         ${fotosArr.map(f=>`<div style="text-align:center;"><img src="${f.foto_url}" style="width:100px;height:76px;border-radius:10px;object-fit:cover;border:1px solid var(--border);cursor:pointer;" onclick="window.open('${f.foto_url}')"><div style="font-size:10px;color:var(--muted);margin-top:3px;">${f.item_id}</div></div>`).join('')}
-       </div></div>`
-    : '';
 
   body.innerHTML = `
     <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
@@ -2107,8 +2101,28 @@ async function showAtendDet(date) {
     <div style="height:6px;background:rgba(255,255,255,.07);border-radius:6px;overflow:hidden;margin-bottom:16px;">
       <div style="height:100%;width:${pct}%;background:${r.concluido_at?'var(--verde)':'#F3C65E'};border-radius:6px;"></div>
     </div>
-    ${fotoHtml}
+    ${fotosArr.length ? `<div id="fotos-det-wrap"><div style="font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Fotos registradas (${fotosArr.length})</div><div id="fotos-det-grid" style="display:flex;flex-wrap:wrap;gap:8px;"><div style="color:var(--muted);font-size:12px;">Carregando fotos...</div></div></div>` : ''}
   `;
+
+  if (fotosArr.length) {
+    const paths = fotosArr.map(f => _storagePath(f.foto_url)).filter(Boolean);
+    const { data: signed } = await window._sb.storage.from('atendimento').createSignedUrls(paths, 3600);
+    const urlMap = {};
+    (signed||[]).forEach(s => { if (s.signedUrl) urlMap[s.path] = s.signedUrl; });
+    const grid = document.getElementById('fotos-det-grid');
+    if (grid) {
+      grid.innerHTML = fotosArr.map(f => {
+        const path = _storagePath(f.foto_url);
+        const su = path && urlMap[path] ? urlMap[path] : f.foto_url;
+        const safeLabel = f.item_id.replace(/'/g,"&#39;");
+        const safeSu = su.replace(/'/g,'%27');
+        return `<div style="text-align:center;cursor:pointer;" onclick="openPhotoLightbox('${safeSu}','${safeLabel}')">
+          <img src="${su}" style="width:100px;height:76px;border-radius:10px;object-fit:cover;border:1px solid var(--border);" onerror="this.style.opacity='.3'">
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;">${f.item_id}</div>
+        </div>`;
+      }).join('');
+    }
+  }
 }
 function closeAtendDet() {
   const d = document.getElementById('atend-rel-detail');
@@ -2158,5 +2172,44 @@ async function delColab(id) {
   loadColaboradores();
 }
 
-</script></body>
+/* ── Photo Lightbox ──────────────────────────────────── */
+function openPhotoLightbox(src, label) {
+  const lb = document.getElementById('photo-lightbox');
+  const img = document.getElementById('photo-lb-img');
+  const lbl = document.getElementById('photo-lb-label');
+  if (!lb||!img) return;
+  img.src = src;
+  if (lbl) lbl.textContent = label || '';
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closePhotoLightbox() {
+  const lb = document.getElementById('photo-lightbox');
+  if (lb) lb.style.display = 'none';
+  document.body.style.overflow = '';
+  const img = document.getElementById('photo-lb-img');
+  if (img) img.src = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePhotoLightbox(); });
+
+function _storagePath(url) {
+  const marker = '/object/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  const parts = url.slice(idx + marker.length).split('/');
+  // parts: ["public"|"sign", "<bucket>", ...path]
+  if (parts.length < 3) return null;
+  return parts.slice(2).join('/');
+}
+
+</script>
+
+<!-- Photo Lightbox -->
+<div id="photo-lightbox" onclick="if(event.target===this)closePhotoLightbox()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:24px;">
+  <button onclick="closePhotoLightbox()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.12);border:none;border-radius:50%;width:40px;height:40px;color:#FFF3D8;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+  <img id="photo-lb-img" src="" alt="" style="max-width:min(90vw,700px);max-height:72vh;border-radius:14px;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.6);">
+  <div id="photo-lb-label" style="font-family:'Heading',Arial,sans-serif;font-size:12px;letter-spacing:.08em;color:rgba(255,243,216,.55);text-transform:uppercase;"></div>
+</div>
+
+</body>
 </html>
