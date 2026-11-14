@@ -1,4 +1,4 @@
-const CACHE = 'foqui-v50';
+const CACHE = 'foqui-v51';
 const STATIC = [
   '/', '/producao', '/finalizacao', '/atendimento', '/login', '/admin',
   '/index.html', '/producao-tablet.html', '/finalizacao-tablet.html',
