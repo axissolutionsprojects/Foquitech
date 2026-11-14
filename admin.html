@@ -2009,7 +2009,7 @@ function _renderAtRelList() {
   }
   const visible = entries.slice(0, _atRelPage);
   const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  const totalItens = _atRelTab === 'fech' ? 53 : 49;
+  const totalItens = _atRelTab === 'fech' ? 55 : 55;
   list.innerHTML = visible.map(([date, rows]) => {
     const [y,m,d2] = date.split('-');
     const label = `${d2}/${m}/${y}`;

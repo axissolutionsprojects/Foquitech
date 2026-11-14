@@ -341,12 +341,12 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
       <button class="mod-card" onclick="goAt('at-aber')" style="min-height:calc(260px + 1cm);width:100%;">
         <div class="mod-title">Abertura</div>
         <div class="mod-sub">Verificação ao chegar na loja — turno manhã</div>
-        <div id="hprog-aber" style="margin-top:10px;font-family:'Heading',Arial,sans-serif;font-size:12px;font-weight:700;color:rgba(255,243,216,.5);">0 / 49 itens</div>
+        <div id="hprog-aber" style="margin-top:10px;font-family:'Heading',Arial,sans-serif;font-size:12px;font-weight:700;color:rgba(255,243,216,.5);">0 / 55 itens</div>
       </button>
       <button class="mod-card" onclick="goAt('at-fech')" style="min-height:calc(260px + 1cm);width:100%;">
         <div class="mod-title">Fechamento</div>
         <div class="mod-sub">Verificação antes de sair da loja — turno noite</div>
-        <div id="hprog-fech" style="margin-top:10px;font-family:'Heading',Arial,sans-serif;font-size:12px;font-weight:700;color:rgba(255,243,216,.5);">0 / 53 itens</div>
+        <div id="hprog-fech" style="margin-top:10px;font-family:'Heading',Arial,sans-serif;font-size:12px;font-weight:700;color:rgba(255,243,216,.5);">0 / 55 itens</div>
       </button>
     </div>
   </div>
@@ -360,7 +360,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   <div id="atlbl-past-aber" style="display:none;align-items:center;gap:8px;background:rgba(243,198,94,.1);border:1px solid rgba(243,198,94,.3);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-family:'Heading',Arial,sans-serif;font-size:12px;font-weight:700;color:#F3C65E;">📅 Visualizando data anterior — apenas leitura</div>
   <div class="at-prog-wrap">
   <div class="at-prog-bar"><div class="at-prog-fill  aber" id="pf-aber" style="width:0%"></div></div>
-  <div class="at-prog-lbl" id="pl-aber">0 / 49 itens concluídos</div>
+  <div class="at-prog-lbl" id="pl-aber">0 / 55 itens concluídos</div>
 </div>
 <div class="at-qr-section" style="display:block;margin-top:0;margin-bottom:16px;">
   <div class="at-qr-title">Registre seu ponto</div>
@@ -563,6 +563,42 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   <span class="at-foto-status" id="fstatus-aber-32b"></span>
 </div></div></div>
 </div>
+<div class="at-chk aber" id="item-aber-32c" onclick="toggleItem('aber-32c','aber')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Ralo limpo</div>—</span><div class="at-extras" onclick="event.stopPropagation()"><div class="at-foto-row">
+  <label class="at-foto-btn" for="finp-aber-32c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Foto</label>
+  <input type="file" accept="image/*" capture="environment" id="finp-aber-32c" style="display:none" onchange="saveFoto('aber-32c','aber',this)">
+  <img class="at-foto-preview" id="fprev-aber-32c" src="" alt="" onclick="viewFoto('aber-32c')">
+  <span class="at-foto-status" id="fstatus-aber-32c"></span>
+</div></div></div>
+</div>
+<div class="at-chk aber" id="item-aber-32d" onclick="toggleItem('aber-32d','aber')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Ralo limpo</div>—</span><div class="at-extras" onclick="event.stopPropagation()"><div class="at-foto-row">
+  <label class="at-foto-btn" for="finp-aber-32d"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Foto</label>
+  <input type="file" accept="image/*" capture="environment" id="finp-aber-32d" style="display:none" onchange="saveFoto('aber-32d','aber',this)">
+  <img class="at-foto-preview" id="fprev-aber-32d" src="" alt="" onclick="viewFoto('aber-32d')">
+  <span class="at-foto-status" id="fstatus-aber-32d"></span>
+</div></div></div>
+</div>
+<div class="at-chk aber" id="item-aber-32e" onclick="toggleItem('aber-32e','aber')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Ralo limpo</div>—</span><div class="at-extras" onclick="event.stopPropagation()"><div class="at-foto-row">
+  <label class="at-foto-btn" for="finp-aber-32e"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Foto</label>
+  <input type="file" accept="image/*" capture="environment" id="finp-aber-32e" style="display:none" onchange="saveFoto('aber-32e','aber',this)">
+  <img class="at-foto-preview" id="fprev-aber-32e" src="" alt="" onclick="viewFoto('aber-32e')">
+  <span class="at-foto-status" id="fstatus-aber-32e"></span>
+</div></div></div>
+</div>
+<div class="at-chk aber" id="item-aber-32f" onclick="toggleItem('aber-32f','aber')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Lixeira da cozinha vazia</div>—</span><div class="at-extras" onclick="event.stopPropagation()"><div class="at-foto-row">
+  <label class="at-foto-btn" for="finp-aber-32f"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Foto</label>
+  <input type="file" accept="image/*" capture="environment" id="finp-aber-32f" style="display:none" onchange="saveFoto('aber-32f','aber',this)">
+  <img class="at-foto-preview" id="fprev-aber-32f" src="" alt="" onclick="viewFoto('aber-32f')">
+  <span class="at-foto-status" id="fstatus-aber-32f"></span>
+</div></div></div>
+</div>
 <div class="at-chk aber" id="item-aber-33" onclick="toggleItem('aber-33','aber')">
 <div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
 <div style="flex:1"><div class="at-lbl">Forno combinado desligado</div>—</span></div>
@@ -613,6 +649,10 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 <div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
 <div style="flex:1"><div class="at-lbl">Luz do estoque desligada</div>—</span></div>
 </div>
+<div class="at-chk aber" id="item-aber-43b" onclick="toggleItem('aber-43b','aber')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Porta fechada com cadeado</div>—</span></div>
+</div>
 <div class="at-chk aber" id="item-aber-44" onclick="toggleItem('aber-44','aber')">
 <div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
 <div style="flex:1"><div class="at-lbl">Luz da lavanderia e corredor desligada</div>—</span></div>
@@ -648,6 +688,15 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   <span class="at-foto-status" id="fstatus-aber-45c"></span>
 </div></div></div>
 </div>
+<div class="at-chk aber" id="item-aber-45d" onclick="toggleItem('aber-45d','aber')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Lixeira do banheiro vazia</div>—</span><div class="at-extras" onclick="event.stopPropagation()"><div class="at-foto-row">
+  <label class="at-foto-btn" for="finp-aber-45d"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Foto</label>
+  <input type="file" accept="image/*" capture="environment" id="finp-aber-45d" style="display:none" onchange="saveFoto('aber-45d','aber',this)">
+  <img class="at-foto-preview" id="fprev-aber-45d" src="" alt="" onclick="viewFoto('aber-45d')">
+  <span class="at-foto-status" id="fstatus-aber-45d"></span>
+</div></div></div>
+</div>
 
 <button class="at-concluir" id="btn-concluir-aber" onclick="concluirTurno('aber')">Concluir turno</button>
 </div>
@@ -677,7 +726,7 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 </div>
   <div class="at-prog-wrap">
   <div class="at-prog-bar"><div class="at-prog-fill" id="pf-fech" style="width:0%"></div></div>
-  <div class="at-prog-lbl" id="pl-fech">0 / 53 itens concluídos</div>
+  <div class="at-prog-lbl" id="pl-fech">0 / 55 itens concluídos</div>
 </div>
   <div class="at-sec ">BANHEIRO / VESTIÁRIO / LAVANDERIA</div>
 <div class="at-chk" id="item-fech-1c" onclick="toggleItem('fech-1c','fech')">
@@ -687,6 +736,15 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
   <input type="file" accept="image/*" capture="environment" id="finp-fech-1c" style="display:none" onchange="saveFoto('fech-1c','fech',this)">
   <img class="at-foto-preview" id="fprev-fech-1c" src="" alt="" onclick="viewFoto('fech-1c')">
   <span class="at-foto-status" id="fstatus-fech-1c"></span>
+</div></div></div>
+</div>
+<div class="at-chk" id="item-fech-1d" onclick="toggleItem('fech-1d','fech')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Lixeira do banheiro vazia</div>—</span><div class="at-extras" onclick="event.stopPropagation()"><div class="at-foto-row">
+  <label class="at-foto-btn" for="finp-fech-1d"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Foto</label>
+  <input type="file" accept="image/*" capture="environment" id="finp-fech-1d" style="display:none" onchange="saveFoto('fech-1d','fech',this)">
+  <img class="at-foto-preview" id="fprev-fech-1d" src="" alt="" onclick="viewFoto('fech-1d')">
+  <span class="at-foto-status" id="fstatus-fech-1d"></span>
 </div></div></div>
 </div>
 <div class="at-chk" id="item-fech-1" onclick="toggleItem('fech-1','fech')">
@@ -719,6 +777,10 @@ html[data-vt-back] ::view-transition-new(vt-s4){animation:vt-il var(--vt-dur) va
 <div class="at-chk" id="item-fech-3" onclick="toggleItem('fech-3','fech')">
 <div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
 <div style="flex:1"><div class="at-lbl">Luz do estoque desligada</div>—</span></div>
+</div>
+<div class="at-chk" id="item-fech-3b" onclick="toggleItem('fech-3b','fech')">
+<div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
+<div style="flex:1"><div class="at-lbl">Porta fechada com cadeado</div>—</span></div>
 </div>
 <div class="at-chk" id="item-fech-4" onclick="toggleItem('fech-4','fech')">
 <div class="at-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg></div>
