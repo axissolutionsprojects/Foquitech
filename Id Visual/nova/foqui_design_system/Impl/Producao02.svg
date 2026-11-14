@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" role="img" aria-labelledby="t d">
+<title id="t">FOQUI — Produção02</title><desc id="d">Tela vertical de tablet com quatro cartões: Receitas, Calendário, Estoque e Compras. Receitas está selecionado em rosa.</desc>
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#003F32"/><stop offset="1" stop-color="#00513F"/></linearGradient>
+ <style>
+ .serif{font-family:Georgia,'Times New Roman',serif;font-weight:700}.sans{font-family:Arial,Helvetica,sans-serif}
+ .cream{fill:#FFF4DC}.muted{fill:#B6D6C9}.green{fill:#004536}
+ .stroke{fill:none;stroke:#FFF4DC;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+ .strokeG{fill:none;stroke:#004536;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+ .card{fill:#064D3E;stroke:#08715A;stroke-width:2}
+ </style>
+</defs>
+<rect width="1024" height="1536" fill="#004B3B"/>
+<rect x="48" y="30" width="928" height="1476" rx="62" fill="#080B0A" stroke="#777B7B" stroke-width="5"/>
+<rect x="94" y="78" width="836" height="1380" rx="28" fill="url(#bg)"/>
+<circle cx="511" cy="57" r="8" fill="#292D2E"/><circle cx="570" cy="57" r="8" fill="#343738"/>
+<!-- Avatar -->
+<g transform="translate(132 116)"><path d="M39 0 54 17 77 12 75 35 93 48 75 62 79 85 56 82 41 101 27 82 4 87 6 63-12 49 7 35 3 12 27 17Z" fill="#F58DA8"/><path d="M36 25h25l-4 13H43l-4 17h16l-4 14H35l-5 15H16l14-59Z" fill="#004536"/></g>
+<rect x="605" y="120" width="300" height="60" rx="30" fill="none" stroke="#08715A" stroke-width="2"/>
+<text x="755" y="158" text-anchor="middle" class="sans cream" font-size="20">sexta-feira, 30 de outubro</text>
+<!-- Header -->
+<g transform="translate(124 250)"><circle cx="34" cy="36" r="30" fill="#0C6651"/><path d="M43 36H22m0 0 10-10m-10 10 10 10" class="stroke" stroke-width="5"/><text x="86" y="47" class="serif cream" font-size="58">Produção</text><text x="86" y="91" class="sans muted" font-size="25">Selecione uma área para continuar.</text></g>
+<!-- Receitas selected -->
+<rect x="114" y="390" width="796" height="250" rx="28" fill="#F58DA8" stroke="#F58DA8" stroke-width="2"/>
+<g transform="translate(158 448)"><rect width="116" height="116" rx="24" fill="#E77F9B" opacity=".55"/><path d="M28 65C12 62 10 42 24 34 25 17 45 10 59 22 73 12 95 22 94 42c14 8 8 26-7 28v21H34V70" class="strokeG"/><path d="M42 73h36M47 84h6m14 0h6" class="strokeG" stroke-width="6"/></g>
+<text x="316" y="486" class="serif green" font-size="43">Receitas</text><text x="316" y="530" class="sans green" font-size="23">Consulte as receitas do dia.</text><text x="316" y="575" class="sans green" font-size="18">Preparos • porções • ingredientes</text>
+<g transform="translate(824 490)"><circle r="34" fill="#FCE0E5" opacity=".45"/><path d="m-8-15 16 15-16 15" class="strokeG" stroke-width="7"/></g>
+<!-- Calendário -->
+<rect x="114" y="670" width="796" height="250" rx="28" class="card"/>
+<g transform="translate(158 728)"><rect width="116" height="116" rx="24" fill="#0B604D"/><rect x="25" y="28" width="66" height="62" rx="7" class="stroke"/><path d="M25 45h66M42 18v18m32-18v18M42 60h9m14 0h9M42 75h9" class="stroke" stroke-width="7"/></g>
+<text x="316" y="766" class="serif cream" font-size="43">Calendário</text><text x="316" y="810" class="sans muted" font-size="23">Acompanhe a programação de produção.</text><text x="316" y="855" class="sans muted" font-size="18">Agenda • horários • quantidades</text>
+<g transform="translate(824 770)"><circle r="34" fill="#0C6651"/><path d="m-8-15 16 15-16 15" class="stroke" stroke-width="7"/></g>
+<!-- Estoque -->
+<rect x="114" y="950" width="796" height="250" rx="28" class="card"/>
+<g transform="translate(158 1008)"><rect width="116" height="116" rx="24" fill="#0B604D"/><path d="m58 20 33 18-33 19-33-19 33-19ZM25 38v39l33 19 33-19V38M58 57v39M42 29l33 19" class="stroke"/></g>
+<text x="316" y="1046" class="serif cream" font-size="43">Estoque</text><text x="316" y="1090" class="sans muted" font-size="23">Verifique os níveis de produtos e insumos.</text><text x="316" y="1135" class="sans muted" font-size="18">Em falta • quase acabando • disponíveis</text>
+<g transform="translate(824 1050)"><circle r="34" fill="#0C6651"/><path d="m-8-15 16 15-16 15" class="stroke" stroke-width="7"/></g>
+<!-- Compras -->
+<rect x="114" y="1230" width="796" height="180" rx="28" class="card"/>
+<g transform="translate(158 1262)"><rect width="116" height="116" rx="24" fill="#0B604D"/><path d="M25 28h11l11 51h39l12-35H42M52 91a5 5 0 1 0 .1 0M83 91a5 5 0 1 0 .1 0" class="stroke"/></g>
+<text x="316" y="1310" class="serif cream" font-size="43">Compras</text><text x="316" y="1354" class="sans muted" font-size="23">Consulte os itens que precisam ser comprados.</text>
+<g transform="translate(824 1320)"><circle r="34" fill="#0C6651"/><path d="m-8-15 16 15-16 15" class="stroke" stroke-width="7"/></g>
+</svg>

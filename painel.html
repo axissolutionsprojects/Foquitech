@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foqui — Painel Operacional v2</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #232323; --border: #2e2e2e;
+      --orange: #f97316; --text: #f0ebe4; --muted: #777;
+      --green: #22c55e; --red: #ef4444; --yellow: #eab308; --blue: #3b82f6;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; padding-bottom: 80px; }
+
+    /* HEADER */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 22px; font-weight: 800; color: var(--orange); }
+    .logo span { color: var(--text); }
+    .date-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--muted); }
+    .date-pill strong { color: var(--text); }
+
+    /* NAV */
+    nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+    nav::-webkit-scrollbar { display: none; }
+    nav button { flex-shrink: 0; padding: 13px 16px; background: none; border: none; border-bottom: 3px solid transparent; color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .15s; }
+    nav button.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+    /* MAIN */
+    main { max-width: 740px; margin: 0 auto; padding: 20px 16px; }
+
+    /* SECTION */
+    .sec { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin: 24px 0 10px; }
+    .sec:first-child { margin-top: 0; }
+
+    /* STATS */
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+    .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-n { font-size: 28px; font-weight: 800; color: var(--orange); }
+    .stat-l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ITEM CARD */
+    .item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color .15s; }
+    .item:hover { border-color: #444; }
+    .item.done { opacity: .4; border-color: var(--green); }
+    .item.pend { border-color: var(--yellow); }
+    .check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; transition: all .15s; }
+    .item.done .check { background: var(--green); border-color: var(--green); color: #fff; }
+    .item.pend .check { background: var(--yellow); border-color: var(--yellow); color: #000; }
+    .item-info { flex: 1; }
+    .item-nome { font-size: 15px; font-weight: 500; }
+    .item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .item-qty { text-align: right; flex-shrink: 0; }
+    .qty-n { font-size: 24px; font-weight: 800; color: var(--orange); line-height: 1; }
+    .qty-l { font-size: 11px; color: var(--muted); }
+
+    /* BTN */
+    .btn { padding: 14px 20px; border-radius: 10px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: opacity .15s; }
+    .btn:hover { opacity: .85; }
+    .btn-orange { background: var(--orange); color: #fff; width: 100%; margin-top: 20px; }
+    .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 8px; }
+
+    /* CARDS GERAIS */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+    .card-header { background: var(--surface2); padding: 11px 16px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; gap: 10px; }
+    .row:last-child { border-bottom: none; }
+    .row-label { flex: 1; }
+    .row-val { font-weight: 700; color: var(--orange); flex-shrink: 0; }
+
+    /* BADGE */
+    .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .badge-green { background: rgba(34,197,94,.15); color: var(--green); }
+    .badge-yellow { background: rgba(234,179,8,.15); color: var(--yellow); }
+    .badge-red { background: rgba(239,68,68,.15); color: var(--red); }
+    .badge-blue { background: rgba(59,130,246,.15); color: var(--blue); }
+    .badge-orange { background: rgba(249,115,22,.15); color: var(--orange); }
+
+    /* INPUT */
+    input[type=number], input[type=text], select, textarea {
+      background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+      padding: 10px 12px; border-radius: 8px; font-size: 14px; width: 100%;
+      outline: none; transition: border-color .15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--orange); }
+    input[type=number] { width: 80px; text-align: center; }
+    label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+
+    /* TABS CONTENT */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* CALENDARIO */
+    .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; margin-bottom: 16px; }
+    .cal-day { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 4px; text-align: center; cursor: pointer; transition: all .15s; }
+    .cal-day:hover { border-color: #555; }
+    .cal-day.today { border-color: var(--orange); }
+    .cal-day.selected { background: var(--orange); border-color: var(--orange); }
+    .cal-day-name { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+    .cal-day.selected .cal-day-name { color: rgba(255,255,255,.7); }
+    .cal-day-num { font-size: 16px; font-weight: 700; }
+    .cal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin: 4px auto 0; }
+
+    .toggle-row { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 3px; margin-bottom: 16px; gap: 3px; }
+    .toggle-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: none; color: var(--muted); transition: all .15s; }
+    .toggle-btn.active { background: var(--orange); color: #fff; }
+
+    /* CHECKLIST PROD */
+    .prod-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; }
+    .prod-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .prod-item-nome { font-size: 15px; font-weight: 600; }
+    .prod-freq { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .ingredientes { display: flex; flex-direction: column; gap: 6px; }
+    .ingr-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .ingr-row:last-child { border-bottom: none; }
+    .ingr-nome { color: var(--muted); }
+    .ingr-calc { font-weight: 700; color: var(--orange); }
+    .ingr-input-wrap { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .ingr-input-wrap label { margin: 0; white-space: nowrap; font-size: 13px; color: var(--muted); }
+    .ingr-input-wrap input { width: 90px; }
+    .ingr-input-wrap select { width: auto; flex-shrink: 0; }
+
+    /* ESTOQUE */
+    .estoque-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); gap: 12px; }
+    .estoque-row:last-child { border-bottom: none; }
+    .estoque-nome { flex: 1; font-size: 14px; }
+    .estoque-meta { font-size: 12px; color: var(--muted); }
+    .estoque-input { width: 70px !important; }
+    .estoque-status { font-size: 12px; font-weight: 700; flex-shrink: 0; width: 60px; text-align: right; }
+
+    /* UPLOAD */
+    .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: border-color .15s; }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--orange); }
+    .upload-icon { font-size: 40px; margin-bottom: 12px; }
+    .upload-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .upload-sub { font-size: 13px; color: var(--muted); }
+    #file-input { display: none; }
+
+    /* PROGRESS */
+    .progress-wrap { background: var(--border); border-radius: 4px; height: 5px; margin-top: 8px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--orange); border-radius: 4px; transition: width .3s; }
+
+    /* TAG FREQUENCIA */
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .5px; }
+    .tag-terca { background: rgba(59,130,246,.15); color: var(--blue); }
+    .tag-quarta { background: rgba(168,85,247,.15); color: #a855f7; }
+    .tag-quinzena { background: rgba(249,115,22,.15); color: var(--orange); }
+    .tag-semanal { background: rgba(34,197,94,.15); color: var(--green); }
+
+    /* MODAL */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; align-items: flex-end; justify-content: center; }
+    .modal-bg.open { display: flex; }
+    .modal { background: var(--surface); border-radius: 20px 20px 0 0; padding: 24px 20px 40px; width: 100%; max-width: 740px; position: relative; max-height: 80vh; overflow-y: auto; }
+    .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Foqui<span>.</span></div>
+  <div class="date-pill" id="hdr-date"></div>
+</header>
+
+<nav>
+  <button class="active" onclick="goTab('finalizacao',this)">Finalização</button>
+  <button onclick="goTab('producao',this)">Produção</button>
+  <button onclick="goTab('estoque',this)">Estoque</button>
+  <button onclick="goTab('calendario',this)">Calendário</button>
+  <button onclick="goTab('compras',this)">Compras</button>
+  <button onclick="goTab('relatorio',this)">Relatório</button>
+</nav>
+
+<main>
+
+<!-- ====== FINALIZAÇÃO ====== -->
+<div class="tab-content active" id="tab-finalizacao">
+  <div class="stats" id="fin-stats"></div>
+  <div id="fin-content"></div>
+  <button class="btn btn-orange" onclick="encerrarDia()">⏹ Encerrar dia e carregar amanhã</button>
+</div>
+
+<!-- ====== PRODUÇÃO ====== -->
+<div class="tab-content" id="tab-producao">
+  <p style="font-size:13px;color:var(--muted);margin-bottom:16px">
+    Insira o peso disponível de cada insumo. O sistema recalcula os ingredientes da receita automaticamente.
+  </p>
+  <div id="prod-content"></div>
+</div>
+
+<!-- ====== ESTOQUE ====== -->
+<div class="tab-content" id="tab-estoque">
+  <div class="toggle-row">
+    <button class="toggle-btn active" onclick="estoqueTab('fin',this)">Finalização</button>
+    <button class="toggle-btn" onclick="estoqueTab('prod',this)">Produção</button>
+  </div>
+  <div id="estoque-fin">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">
+      Registre o estoque disponível agora. O sistema ajusta a meta do dia automaticamente.
+    </p>
+    <div id="estoque-fin-content"></div>
+    <button class="btn btn-orange" onclick="salvarEstoqueFin()">Salvar e recalcular meta do dia</button>
+  </div>
+  <div id="estoque-prod" style="display:none">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">
+      Contagem de estoque ao fim da semana. O sistema desconta da produção da próxima semana.
+    </p>
+    <div id="estoque-prod-content"></div>
+    <button class="btn btn-orange" onclick="salvarEstoqueProd()">Salvar estoque de produção</button>
+  </div>
+</div>
+
+<!-- ====== CALENDÁRIO ====== -->
+<div class="tab-content" id="tab-calendario">
+  <div class="toggle-row">
+    <button class="toggle-btn active" onclick="calView('dia',this)">Dia</button>
+    <button class="toggle-btn" onclick="calView('semana',this)">Semana</button>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+  <div id="cal-detail"></div>
+</div>
+
+<!-- ====== COMPRAS ====== -->
+<div class="tab-content" id="tab-compras">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <p class="sec" style="margin:0">Lista da semana</p>
+    <select id="dias-sel" onchange="renderCompras()" style="width:auto">
+      <option value="6">6 dias</option>
+      <option value="5">5 dias</option>
+      <option value="7">7 dias</option>
+    </select>
+  </div>
+  <div id="compras-content"></div>
+</div>
+
+<!-- ====== RELATÓRIO ====== -->
+<div class="tab-content" id="tab-relatorio">
+  <p class="sec">Upload do relatório de vendas</p>
+  <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+       ondragover="event.preventDefault();this.classList.add('dragover')"
+       ondragleave="this.classList.remove('dragover')"
+       ondrop="handleDrop(event)">
+    <div class="upload-icon">📊</div>
+    <div class="upload-title">Arraste o PDF ou clique para selecionar</div>
+    <div class="upload-sub">Relatório Chefweb · PDF ou imagem</div>
+  </div>
+  <input type="file" id="file-input" accept=".pdf,image/*" onchange="handleFile(this.files[0])">
+  <div id="upload-result" style="margin-top:20px;display:none"></div>
+
+  <p class="sec" style="margin-top:28px">Histórico de relatórios</p>
+  <div id="relatorio-historico"></div>
+</div>
+
+</main>
+
+<!-- MODAL genérico -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DADOS BASE (médias diárias — Agosto/2026, 31 dias)
+// Combos já somados nos sanduíches correspondentes
+// ============================================================
+const BASE_FIN = {
+  sanduiches: [
+    { id:'frango',       nome:'Frango',           media:12 },
+    { id:'frango_bacon', nome:'Frango e Bacon',   media:10 },
+    { id:'pernil',       nome:'Pernil',            media:11 },
+    { id:'caprese',      nome:'Caprese',           media:7  },
+    { id:'caipira',      nome:'Caipira',           media:6  },
+    { id:'mignon',       nome:'Mignon',            media:6  },
+    { id:'pernil_esp',   nome:'Pernil Especial',   media:5  },
+    { id:'carne_pan',    nome:'Carne de Panela',   media:5  },
+    { id:'linguica',     nome:'Linguiça Blumenau', media:4  },
+    { id:'cogumelo',     nome:'Cogumelo',          media:2  },
+    { id:'falafel',      nome:'Falafel',           media:2  },
+  ],
+  wraps: [
+    { id:'w_caesar',  nome:'Wrap Caesar',  media:4 },
+    { id:'w_pernil',  nome:'Wrap Pernil',  media:1 },
+    { id:'w_caprese', nome:'Wrap Caprese', media:1 },
+  ],
+  saladas: [
+    { id:'s_caesar',  nome:'Salada Caesar',  media:3 },
+    { id:'s_pernil',  nome:'Salada Pernil',  media:1 },
+    { id:'s_caprese', nome:'Salada Caprese', media:1 },
+  ],
+  sobremesas: [
+    { id:'brigadeiro', nome:'Brigadeiro',    media:13 },
+    { id:'rabanada',   nome:'Rabanada',      media:2  },
+    { id:'rab_brulee', nome:'Rabanada Brulée', media:2 },
+    { id:'doce_leite', nome:'Doce de Leite', media:1  },
+  ]
+};
+
+const CATS_FIN = [
+  { key:'sanduiches', label:'Sanduíches' },
+  { key:'wraps',      label:'Wraps' },
+  { key:'saladas',    label:'Saladas' },
+  { key:'sobremesas', label:'Sobremesas' },
+];
+
+// Receitas de produção — dados reais do Livro de Receitas Foqui
+const RECEITAS_PROD = [
+  // ── PROTEÍNAS ──────────────────────────────────────────────
+  {
+    id:'rec_frango', nome:'Frango Grelhado', cat:'🥩 Proteínas',
+    freq:'Toda terça', tag:'tag-terca', rende:'58 porções de 70g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:5, base_label:'kg de peito de frango',
+    ingredientes:[
+      { nome:'Peito de Frango', base:5000, un:'g' },
+      { nome:'Tempero Foqui', base:80, un:'g' },
+      { nome:'Óleo de soja', base:80, un:'ml' },
+    ]
+  },
+  {
+    id:'rec_pernil', nome:'Pernil Desfiado', cat:'🥩 Proteínas',
+    freq:'2x por mês (1ª e 3ª terça)', tag:'tag-quinzena', rende:'93 porções de 80g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:20, base_label:'kg de pernil suíno',
+    ingredientes:[
+      { nome:'Pernil suíno', base:20000, un:'g' },
+      { nome:'Molho Shoyu', base:2000, un:'ml' },
+      { nome:'Alho batido', base:250, un:'g' },
+      { nome:'Mel', base:600, un:'g' },
+      { nome:'Lemon pepper', base:250, un:'g' },
+      { nome:'Pimenta calabresa', base:20, un:'g' },
+      { nome:'Água filtrada', base:1000, un:'ml' },
+      { nome:'Amido de milho (p/ caldo)', base:300, un:'g' },
+    ]
+  },
+  {
+    id:'rec_carne_pan', nome:'Carne de Panela', cat:'🥩 Proteínas',
+    freq:'2x por mês (2ª e 4ª terça)', tag:'tag-quinzena', rende:'80 porções de 80g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:16, base_label:'kg de coxão duro',
+    ingredientes:[
+      { nome:'Coxão duro', base:16000, un:'g' },
+      { nome:'Cenoura', base:500, un:'g' },
+      { nome:'Cebola', base:500, un:'g' },
+      { nome:'Alho batido', base:240, un:'g' },
+      { nome:'Ervas finas', base:50, un:'g' },
+      { nome:'Louro em pó', base:15, un:'g' },
+      { nome:'Tempero Foqui', base:220, un:'g' },
+      { nome:'Shoyu', base:400, un:'ml' },
+      { nome:'Mix de pimentas', base:30, un:'g' },
+      { nome:'Água filtrada', base:2000, un:'ml' },
+      { nome:'Amido de milho (p/ caldo)', base:250, un:'g' },
+    ]
+  },
+  {
+    id:'rec_mignon', nome:'Mignon', cat:'🥩 Proteínas',
+    freq:'Sob demanda', tag:'tag-semanal', rende:'11 porções de 70g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:1, base_label:'kg de tiras de mignon',
+    ingredientes:[
+      { nome:'Tiras de Mignon', base:1000, un:'g' },
+      { nome:'Sal', base:15, un:'g' },
+      { nome:'Ervas finas', base:15, un:'ml' },
+      { nome:'Mix de pimenta', base:2, un:'g' },
+      { nome:'Manteiga sem sal (pós-assar)', base:20, un:'g' },
+    ]
+  },
+  {
+    id:'rec_cogumelo', nome:'Cogumelo Refogado', cat:'🥩 Proteínas',
+    freq:'1x por mês (1ª quarta)', tag:'tag-quarta', rende:'44 porções de 100g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:5, base_label:'kg de cogumelo paris fatiado',
+    ingredientes:[
+      { nome:'Cogumelo paris fatiado', base:5000, un:'g' },
+      { nome:'Sal', base:80, un:'g' },
+      { nome:'Mix de pimentas', base:10, un:'g' },
+      { nome:'Ervas finas', base:80, un:'g' },
+      { nome:'Azeite de oliva', base:100, un:'ml' },
+      { nome:'Óleo de soja', base:100, un:'ml' },
+    ]
+  },
+  {
+    id:'rec_falafel', nome:'Falafel', cat:'🥩 Proteínas',
+    freq:'Sob demanda', tag:'tag-semanal', rende:'80 unidades (6x8cm)',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:1, base_label:'kg de grão de bico',
+    ingredientes:[
+      { nome:'Grão de bico', base:1000, un:'g' },
+      { nome:'Azeite', base:150, un:'ml' },
+      { nome:'Óleo de soja', base:150, un:'ml' },
+      { nome:'Cominho em pó', base:2, un:'g' },
+      { nome:'Mix de pimenta', base:10, un:'g' },
+      { nome:'Coentro desidratado', base:15, un:'g' },
+      { nome:'Salsa desidratada', base:15, un:'g' },
+      { nome:'Hortelã desidratado', base:15, un:'g' },
+      { nome:'Gergelim branco torrado', base:100, un:'g' },
+      { nome:'Sal', base:30, un:'g' },
+    ]
+  },
+  {
+    id:'rec_berinjela', nome:'Pasta de Berinjela', cat:'🥩 Proteínas',
+    freq:'Sob demanda', tag:'tag-semanal', rende:'60 porções de 500g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:10, base_label:'kg de berinjela',
+    ingredientes:[
+      { nome:'Berinjela', base:10000, un:'g' },
+      { nome:'Sal', base:75, un:'g' },
+      { nome:'Mix de pimenta', base:10, un:'g' },
+      { nome:'Azeite de oliva', base:100, un:'ml' },
+      { nome:'Óleo de soja', base:100, un:'ml' },
+    ]
+  },
+  {
+    id:'rec_cebola', nome:'Cebola Caramelizada', cat:'🥩 Proteínas',
+    freq:'Sob demanda', tag:'tag-semanal', rende:'100 porções',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:5, base_label:'kg de cebola branca fatiada',
+    ingredientes:[
+      { nome:'Cebola branca fatiada', base:5000, un:'g' },
+      { nome:'Sal', base:60, un:'g' },
+      { nome:'Manteiga', base:100, un:'g' },
+      { nome:'Açúcar', base:200, un:'g' },
+    ]
+  },
+  {
+    id:'rec_bacon', nome:'Bacon', cat:'🥩 Proteínas',
+    freq:'Semanal (validade 10 dias)', tag:'tag-semanal', rende:'5.750g / 383 porções',
+    validade:'10 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:15, base_label:'kg de bacon em cubos',
+    ingredientes:[
+      { nome:'Bacon em cubos', base:15000, un:'g' },
+    ]
+  },
+  {
+    id:'rec_picles', nome:'Picles', cat:'🥩 Proteínas',
+    freq:'Mensal', tag:'tag-quinzena', rende:'533 porções',
+    validade:'3 meses (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:16, base_label:'kg de pepino japonês',
+    ingredientes:[
+      { nome:'Pepino japonês fatiado', base:16000, un:'g' },
+      { nome:'Vinagre de álcool', base:5000, un:'ml' },
+      { nome:'Água filtrada', base:5000, un:'ml' },
+      { nome:'Açúcar', base:2700, un:'g' },
+      { nome:'Sal', base:400, un:'g' },
+      { nome:'Coentro em pó', base:60, un:'g' },
+      { nome:'Mix de pimenta', base:20, un:'g' },
+      { nome:'Louro em pó', base:30, un:'g' },
+      { nome:'Pasta de alho', base:70, un:'g' },
+      { nome:'Ervas finas', base:60, un:'g' },
+    ]
+  },
+
+  // ── PÃES ───────────────────────────────────────────────────
+  {
+    id:'rec_foqui_pao', nome:'Foqui (Focaccia)', cat:'🍞 Pães',
+    freq:'Conforme demanda', tag:'tag-terca', rende:'16 pães G',
+    validade:'Congelado após 24h de descanso', armazenamento:'Congelado',
+    base_kg:13, base_label:'kg de farinha de trigo',
+    ingredientes:[
+      { nome:'Farinha de trigo', base:13000, un:'g' },
+      { nome:'Água filtrada', base:6800, un:'ml' },
+      { nome:'Fermento natural ativado', base:5000, un:'g' },
+      { nome:'Sal', base:240, un:'g' },
+      { nome:'Fermento biológico', base:40, un:'g' },
+    ]
+  },
+  {
+    id:'rec_brioche', nome:'Brioche', cat:'🍞 Pães',
+    freq:'Conforme demanda', tag:'tag-terca', rende:'15 unidades / 3 brioche box',
+    validade:'Congelado após 24h de descanso', armazenamento:'Congelado',
+    base_kg:4.35, base_label:'kg de farinha de trigo',
+    ingredientes:[
+      { nome:'Farinha de trigo', base:4350, un:'g' },
+      { nome:'Açúcar', base:750, un:'g' },
+      { nome:'Fermento natural ativado', base:750, un:'g' },
+      { nome:'Ovos (batidos e peneirados)', base:2400, un:'g' },
+      { nome:'Fermento biológico', base:60, un:'g' },
+      { nome:'Manteiga sem sal gelada', base:750, un:'g' },
+      { nome:'Sal', base:75, un:'g' },
+    ]
+  },
+  {
+    id:'rec_pao_queijo', nome:'Pão de Queijo', cat:'🍞 Pães',
+    freq:'Conforme demanda', tag:'tag-semanal', rende:'25 unidades',
+    validade:'Congelado', armazenamento:'Congelado',
+    base_kg:1, base_label:'kg de polvilho doce',
+    ingredientes:[
+      { nome:'Leite', base:450, un:'ml' },
+      { nome:'Água', base:450, un:'ml' },
+      { nome:'Óleo de soja', base:450, un:'ml' },
+      { nome:'Sal', base:45, un:'g' },
+      { nome:'Polvilho doce', base:1000, un:'g' },
+      { nome:'Polvilho azedo', base:1000, un:'g' },
+      { nome:'Queijo muçarela ralado', base:400, un:'g' },
+      { nome:'Ovos (batidos e peneirados)', base:400, un:'g' },
+    ]
+  },
+
+  // ── MOLHOS ─────────────────────────────────────────────────
+  {
+    id:'rec_maio_alho', nome:'Maionese de Alho', cat:'🥫 Molhos',
+    freq:'Toda quarta', tag:'tag-quarta', rende:'31 porções',
+    validade:'5 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:0.45, base_label:'litros de leite integral',
+    ingredientes:[
+      { nome:'Leite integral', base:450, un:'ml' },
+      { nome:'Óleo de soja', base:1050, un:'ml' },
+      { nome:'Alho', base:5, un:'g' },
+      { nome:'Sal', base:15, un:'g' },
+      { nome:'Suco de limão tahiti', base:30, un:'g' },
+    ]
+  },
+  {
+    id:'rec_maio_tomate', nome:'Maionese de Tomate Seco c/ Manjericão', cat:'🥫 Molhos',
+    freq:'Toda quarta', tag:'tag-quarta', rende:'16 porções',
+    validade:'5 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:0.45, base_label:'kg de maionese de alho',
+    ingredientes:[
+      { nome:'Maionese de alho', base:450, un:'g' },
+      { nome:'Tomate seco', base:80, un:'g' },
+      { nome:'Pesto', base:60, un:'g' },
+    ]
+  },
+  {
+    id:'rec_maio_pesto', nome:'Maionese de Pesto', cat:'🥫 Molhos',
+    freq:'Toda quarta', tag:'tag-quarta', rende:'17 porções',
+    validade:'5 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:0.45, base_label:'kg de maionese de alho',
+    ingredientes:[
+      { nome:'Maionese de alho', base:450, un:'g' },
+      { nome:'Pesto', base:150, un:'g' },
+    ]
+  },
+  {
+    id:'rec_maio_limao', nome:'Maionese de Limão Siciliano', cat:'🥫 Molhos',
+    freq:'Toda quarta', tag:'tag-quarta', rende:'33 porções',
+    validade:'5 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:0.07, base_label:'kg de gema em pó',
+    ingredientes:[
+      { nome:'Gema em pó', base:70, un:'g' },
+      { nome:'Água filtrada', base:200, un:'ml' },
+      { nome:'Sal', base:10, un:'g' },
+      { nome:'Óleo de soja', base:900, un:'ml' },
+      { nome:'Raspas de limão siciliano', base:1, un:'un' },
+      { nome:'Suco de limão siciliano', base:75, un:'g' },
+    ]
+  },
+  {
+    id:'rec_maio_bacon', nome:'Maionese de Bacon', cat:'🥫 Molhos',
+    freq:'Toda quarta', tag:'tag-quarta', rende:'42 porções',
+    validade:'5 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:0.07, base_label:'kg de gema em pó',
+    ingredientes:[
+      { nome:'Gema em pó', base:70, un:'g' },
+      { nome:'Água filtrada', base:290, un:'ml' },
+      { nome:'Sal', base:10, un:'g' },
+      { nome:'Óleo de soja', base:900, un:'ml' },
+      { nome:'Suco de limão tahiti', base:45, un:'g' },
+      { nome:'Bacon frito', base:100, un:'g' },
+    ]
+  },
+  {
+    id:'rec_maio_mostarda', nome:'Maionese Mostarda e Mel', cat:'🥫 Molhos',
+    freq:'Toda quarta', tag:'tag-quarta', rende:'88 porções',
+    validade:'5 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:0.09, base_label:'kg de gema em pó',
+    ingredientes:[
+      { nome:'Gema em pó', base:90, un:'g' },
+      { nome:'Água filtrada', base:270, un:'ml' },
+      { nome:'Mostarda amarela', base:280, un:'g' },
+      { nome:'Mel', base:160, un:'g' },
+      { nome:'Óleo de soja', base:1800, un:'ml' },
+      { nome:'Suco de limão tahiti', base:60, un:'g' },
+    ]
+  },
+  {
+    id:'rec_caesar', nome:'Molho Caesar', cat:'🥫 Molhos',
+    freq:'Toda quarta', tag:'tag-quarta', rende:'4 porções',
+    validade:'5 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:1, base_label:'kg de maionese de alho',
+    ingredientes:[
+      { nome:'Maionese de alho', base:1000, un:'g' },
+      { nome:'Maionese de limão siciliano', base:1000, un:'g' },
+      { nome:'Iogurte natural', base:2200, un:'g' },
+      { nome:'Mix de pimenta', base:15, un:'g' },
+      { nome:'Sal', base:15, un:'g' },
+    ]
+  },
+  {
+    id:'rec_pesto', nome:'Pesto Batido', cat:'🥫 Molhos',
+    freq:'Mensal', tag:'tag-quinzena', rende:'6 porções de 500g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:2, base_label:'kg de folhas de espinafre',
+    ingredientes:[
+      { nome:'Folhas de espinafre', base:2000, un:'g' },
+      { nome:'Folhas de alfavaca', base:500, un:'g' },
+      { nome:'Óleo de soja', base:2250, un:'ml' },
+    ]
+  },
+
+  // ── DOCES ──────────────────────────────────────────────────
+  {
+    id:'rec_brigadeiro', nome:'Brigadeiro de Colher', cat:'🍫 Doces',
+    freq:'Toda semana', tag:'tag-semanal', rende:'Armazenar em potes',
+    validade:'10 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:5, base_label:'kg de leite condensado',
+    ingredientes:[
+      { nome:'Leite condensado', base:5000, un:'g' },
+      { nome:'Creme de leite', base:5000, un:'g' },
+      { nome:'Chocolate em pó 50%', base:625, un:'g' },
+    ]
+  },
+  {
+    id:'rec_farofa', nome:'Farofa de Amendoim', cat:'🍫 Doces',
+    freq:'Conforme demanda', tag:'tag-semanal', rende:'Validade 20 dias',
+    validade:'20 dias', armazenamento:'Temperatura ambiente',
+    base_kg:2, base_label:'kg de farofa de pão',
+    ingredientes:[
+      { nome:'Farofa de pão', base:2000, un:'g' },
+      { nome:'Amendoim', base:1000, un:'g' },
+      { nome:'Manteiga sem sal (pomada)', base:600, un:'g' },
+      { nome:'Açúcar', base:500, un:'g' },
+      { nome:'Sal', base:20, un:'g' },
+    ]
+  },
+  {
+    id:'rec_caramelo', nome:'Caramelo Salgado', cat:'🍫 Doces',
+    freq:'Mensal', tag:'tag-quinzena', rende:'Armazenar em potes',
+    validade:'2 meses (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:2, base_label:'kg de açúcar',
+    ingredientes:[
+      { nome:'Açúcar', base:2000, un:'g' },
+      { nome:'Leite', base:1000, un:'ml' },
+      { nome:'Sal', base:40, un:'g' },
+    ]
+  },
+  {
+    id:'rec_manteiga_canela', nome:'Manteiga de Canela', cat:'🍫 Doces',
+    freq:'Quinzenal', tag:'tag-quinzena', rende:'Armazenar em potes',
+    validade:'15 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:2, base_label:'kg de manteiga sem sal',
+    ingredientes:[
+      { nome:'Manteiga sem sal', base:2000, un:'g' },
+      { nome:'Açúcar cristal', base:500, un:'g' },
+      { nome:'Canela em pó', base:100, un:'g' },
+    ]
+  },
+  {
+    id:'rec_calda_doce', nome:'Calda de Doce de Leite', cat:'🍫 Doces',
+    freq:'Semanal', tag:'tag-semanal', rende:'Armazenar em bisnaga',
+    validade:'15 dias (refrigerado)', armazenamento:'Refrigerado',
+    base_kg:0.4, base_label:'litros de doce de leite',
+    ingredientes:[
+      { nome:'Doce de leite Aviação', base:400, un:'ml' },
+      { nome:'Leite integral gelado', base:100, un:'ml' },
+    ]
+  },
+
+  // ── TEMPEROS BASE ──────────────────────────────────────────
+  {
+    id:'rec_tempero_foqui', nome:'Tempero Foqui', cat:'🧂 Temperos Base',
+    freq:'Conforme estoque', tag:'tag-quinzena', rende:'1.3kg',
+    validade:'3 meses (temperatura ambiente)', armazenamento:'Temperatura ambiente',
+    base_kg:1, base_label:'kg de sal',
+    ingredientes:[
+      { nome:'Sal', base:1000, un:'g' },
+      { nome:'Páprica defumada', base:250, un:'g' },
+      { nome:'Mix de pimentas', base:50, un:'g' },
+    ]
+  },
+  {
+    id:'rec_mix_pimenta', nome:'Mix de Pimentas', cat:'🧂 Temperos Base',
+    freq:'Conforme estoque', tag:'tag-quinzena', rende:'1.5kg',
+    validade:'3 meses (temperatura ambiente)', armazenamento:'Temperatura ambiente',
+    base_kg:0.5, base_label:'kg de pimenta do reino preta',
+    ingredientes:[
+      { nome:'Pimenta do reino preta em pó', base:500, un:'g' },
+      { nome:'Pimenta do reino branca em pó', base:500, un:'g' },
+      { nome:'Pimenta caiena em pó', base:250, un:'g' },
+      { nome:'Pimenta da jamaica em pó', base:250, un:'g' },
+    ]
+  },
+  {
+    id:'rec_alho_batido', nome:'Alho Batido', cat:'🧂 Temperos Base',
+    freq:'Conforme estoque', tag:'tag-quinzena', rende:'Armazenar em potes de 800g',
+    validade:'3 meses (congelado)', armazenamento:'Congelado',
+    base_kg:1, base_label:'kg de alho descascado',
+    ingredientes:[
+      { nome:'Alho descascado', base:1000, un:'g' },
+      { nome:'Óleo de soja', base:500, un:'ml' },
+    ]
+  },
+];
+
+// ============================================================
+// ============================================================
+// AGENDA DE PRODUÇÃO — dow: 0=dom 1=seg 2=ter 3=qua 4=qui 5=sex 6=sab
+// semanas: [0]=toda semana [1]=1ª [2]=2ª [3]=3ª [4]=4ª do mês
+// ============================================================
+const AGENDA_PROD = [
+  // TERÇAS
+  { recId:'rec_frango',        dow:2, semanas:[0], obs:'Forno 260°C · 7 min · porções de 1.400g' },
+  { recId:'rec_pernil',        dow:2, semanas:[1,3], obs:'Pressão 1h40 · desfiar · porcionar 1.600g' },
+  { recId:'rec_carne_pan',     dow:2, semanas:[2,4], obs:'Pressão 1h40 · desfiar · porcionar 1.600g' },
+  { recId:'rec_bacon',         dow:2, semanas:[0], obs:'Forno 230°C · ciclo 3×15min + 2×8min' },
+  { recId:'rec_brigadeiro',    dow:2, semanas:[0], obs:'Fogo médio · mexer sempre · armazenar em potes' },
+  { recId:'rec_calda_doce',    dow:2, semanas:[0], obs:'Misturar frio · bisnaga · refrigerado' },
+  // QUARTAS
+  { recId:'rec_maio_alho',     dow:3, semanas:[0], obs:'Liquidificador · até 3 receitas por vez' },
+  { recId:'rec_maio_tomate',   dow:3, semanas:[0], obs:'Depende da maionese de alho' },
+  { recId:'rec_maio_pesto',    dow:3, semanas:[0], obs:'Depende da maionese de alho' },
+  { recId:'rec_maio_limao',    dow:3, semanas:[0], obs:'Liquidificador · gema em pó' },
+  { recId:'rec_maio_bacon',    dow:3, semanas:[0], obs:'Liquidificador · bacon frito' },
+  { recId:'rec_maio_mostarda', dow:3, semanas:[0], obs:'Liquidificador · até 9 receitas por vez' },
+  { recId:'rec_caesar',        dow:3, semanas:[0], obs:'Mistura fria · bisnagas ou potes' },
+  { recId:'rec_cogumelo',      dow:3, semanas:[1], obs:'Forno 260°C · 15 min · porcionar 100g' },
+  { recId:'rec_pesto',         dow:3, semanas:[1], obs:'Branquear folhas · liquidificador · porcionar 500g' },
+  // QUINTAS (temperos base — conforme estoque)
+  { recId:'rec_tempero_foqui', dow:4, semanas:[1], obs:'Mistura seca · armazenar' },
+  { recId:'rec_mix_pimenta',   dow:4, semanas:[1], obs:'Mistura seca · armazenar' },
+  { recId:'rec_alho_batido',   dow:4, semanas:[1], obs:'Liquidificador · potes de 800g · congelar' },
+  // SEXTAS (pães — 1 dia antes do fim de semana)
+  { recId:'rec_foqui_pao',     dow:5, semanas:[0], obs:'Fermentação 21h na geladeira · assar sábado' },
+  { recId:'rec_pao_queijo',    dow:5, semanas:[0], obs:'Forno 160°C · 25 min · porcionar 5 un' },
+  { recId:'rec_brioche',       dow:5, semanas:[1,3], obs:'Fermentação 21h · assar sábado · 9 fatias cada' },
+  // SEGUNDA (preparo da semana)
+  { recId:'rec_berinjela',     dow:1, semanas:[0], obs:'Forno 160°C · 45 min · amassar · porcionar 500g' },
+  { recId:'rec_cebola',        dow:1, semanas:[0], obs:'Fogo baixo · caramelizar devagar · porcionar' },
+  { recId:'rec_picles',        dow:1, semanas:[1], obs:'Preparar caldo quente · pepino fatiado · gelar 24h' },
+  { recId:'rec_farofa',        dow:1, semanas:[2], obs:'Forno 160°C · 15 min · armazenar temp. ambiente' },
+  { recId:'rec_manteiga_canela',dow:1, semanas:[2], obs:'Pomada · mistura manual · refrigerado' },
+  { recId:'rec_caramelo',      dow:1, semanas:[3], obs:'Derreter açúcar · adicionar leite aos poucos' },
+];
+
+function getReceitasDia(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const dow = d.getDay();
+  const weekOfMonth = Math.ceil(d.getDate() / 7);
+  return AGENDA_PROD
+    .filter(ag => ag.dow === dow && (ag.semanas.includes(0) || ag.semanas.includes(weekOfMonth)))
+    .map(ag => ({ ...RECEITAS_PROD.find(r => r.id === ag.recId), obs: ag.obs }))
+    .filter(Boolean);
+}
+
+// ============================================================
+// ESTADO localStorage
+// ============================================================
+function load() { return JSON.parse(localStorage.getItem('foqui_v2')||'{}'); }
+function save(s) { localStorage.setItem('foqui_v2', JSON.stringify(s)); }
+
+function todayStr(offset=0) {
+  const d = new Date(); d.setDate(d.getDate()+offset);
+  return d.toISOString().slice(0,10);
+}
+const TODAY = todayStr();
+
+function ensureDay(state, key) {
+  if (!state[key]) {
+    state[key] = { items:{}, encerrado:false, estoque:{}, notas:'' };
+    CATS_FIN.forEach(cat => BASE_FIN[cat.key].forEach(it => {
+      state[key].items[it.id] = { meta:it.media, feito:0, pendente:0, done:false };
+    }));
+  }
+  return state[key];
+}
+
+function seedSemana() {
+  const s = load();
+  for (let i=0; i<7; i++) { const k=todayStr(i); if(!s[k]) ensureDay(s,k); }
+  save(s);
+}
+
+// ============================================================
+// HEADER
+// ============================================================
+function renderHeader() {
+  const d = new Date();
+  const label = d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('hdr-date').innerHTML = `<strong>${label}</strong>`;
+}
+
+// ============================================================
+// ABA FINALIZAÇÃO
+// ============================================================
+function renderFinalizacao() {
+  const s = load(); const day = ensureDay(s, TODAY); save(s);
+  const all = Object.values(day.items);
+  const done = all.filter(x=>x.done).length;
+  const pend = all.filter(x=>x.pendente>0).length;
+  document.getElementById('fin-stats').innerHTML = `
+    <div class="stat"><div class="stat-n">${all.length}</div><div class="stat-l">Itens hoje</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--green)">${done}</div><div class="stat-l">Concluídos</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--yellow)">${pend}</div><div class="stat-l">Pendentes</div></div>
+  `;
+  let html='';
+  CATS_FIN.forEach(cat => {
+    html += `<p class="sec">${cat.label}</p>`;
+    BASE_FIN[cat.key].forEach(it => {
+      const d = day.items[it.id]||{meta:it.media,feito:0,pendente:0,done:false};
+      const total = d.meta + d.pendente;
+      const pct = Math.min(100, Math.round(d.feito/total*100));
+      const cls = d.done?'done':d.pendente>0?'pend':'';
+      html += `
+        <div class="item ${cls}" onclick="toggleItem('${it.id}')">
+          <div class="check">${d.done?'✓':d.pendente>0?'!':''}</div>
+          <div class="item-info">
+            <div class="item-nome">${it.nome}</div>
+            ${d.pendente>0?`<div class="item-sub" style="color:var(--yellow)">+${d.pendente} do dia anterior</div>`:''}
+            <div class="progress-wrap" style="margin-top:6px"><div class="progress-fill" style="width:${pct}%"></div></div>
+          </div>
+          <div class="item-qty"><div class="qty-n">${total}</div><div class="qty-l">unid.</div></div>
+        </div>`;
+    });
+  });
+  document.getElementById('fin-content').innerHTML = html;
+}
+
+function toggleItem(id) {
+  const s=load(); const day=ensureDay(s,TODAY);
+  const it = day.items[id];
+  it.done = !it.done;
+  if (it.done) it.feito = it.meta + it.pendente;
+  else it.feito = 0;
+  save(s); renderFinalizacao();
+}
+
+function encerrarDia() {
+  if (!confirm('Encerrar o dia de hoje? Itens não concluídos serão adicionados ao dia seguinte.')) return;
+  const s=load();
+  const today = ensureDay(s,TODAY);
+  today.encerrado = true;
+  const amanha = todayStr(1);
+  ensureDay(s, amanha);
+  CATS_FIN.forEach(cat => BASE_FIN[cat.key].forEach(it => {
+    const d = today.items[it.id];
+    if (!d.done) {
+      const rest = (d.meta+d.pendente) - d.feito;
+      if (rest>0) s[amanha].items[it.id].pendente += rest;
+    }
+  }));
+  save(s);
+  alert('Dia encerrado!');
+  renderFinalizacao();
+  renderCalendario();
+}
+
+// ============================================================
+// ABA PRODUÇÃO — cálculo proporcional
+// ============================================================
+function renderProducao() {
+  const s = load(); const day = ensureDay(s,TODAY);
+
+  // agrupar por categoria
+  const grupos = {};
+  RECEITAS_PROD.forEach(rec => {
+    const cat = rec.cat || 'Outros';
+    if (!grupos[cat]) grupos[cat] = [];
+    grupos[cat].push(rec);
+  });
+
+  let html='';
+  Object.entries(grupos).forEach(([cat, receitas]) => {
+    html += `<p class="sec">${cat}</p>`;
+    receitas.forEach(rec => {
+      const stored = (s.prod_disp||{})[rec.id] || rec.base_kg;
+      const fator = stored / rec.base_kg;
+      const tagLabel = rec.freq.includes('terça')?'TERÇA':rec.freq.includes('quarta')?'QUARTA':rec.freq.toLowerCase().includes('mês')||rec.freq.includes('quinzen')||rec.freq.includes('mensal')?'QUINZENA':rec.freq.includes('emana')?'SEMANA':'SOB DEM.';
+      html += `
+        <div class="prod-item">
+          <div class="prod-item-header">
+            <div>
+              <div class="prod-item-nome">${rec.nome}</div>
+              <div class="prod-freq">${rec.freq} · <span style="color:var(--green)">${rec.rende}</span></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">${rec.armazenamento} · ${rec.validade}</div>
+            </div>
+            <span class="tag ${rec.tag}">${tagLabel}</span>
+          </div>
+          <div class="ingredientes">
+            ${rec.ingredientes.map(ing=>`
+              <div class="ingr-row">
+                <span class="ingr-nome">${ing.nome}</span>
+                <span class="ingr-calc" id="calc_${rec.id}_${ing.nome.replace(/[\s\/\(\)]/g,'_')}">${fmt(ing.base*fator)} ${ing.un}</span>
+              </div>`).join('')}
+          </div>
+          <div class="ingr-input-wrap">
+            <label>Disponível hoje:</label>
+            <input type="number" id="disp_${rec.id}" value="${stored}" min="0" step="0.1"
+              oninput="recalcRec('${rec.id}', this.value)" style="width:90px">
+            <span style="font-size:13px;color:var(--muted)">${rec.base_label.includes('litro')?'L':'kg'}</span>
+            <button class="btn btn-ghost btn-sm" onclick="salvarDisp('${rec.id}')">Salvar</button>
+          </div>
+        </div>`;
+    });
+  });
+  document.getElementById('prod-content').innerHTML = html;
+}
+
+function fmt(v) {
+  if (v >= 1000) return (v/1000).toFixed(2).replace('.',',') + 'kg';
+  return Math.round(v) + '';
+}
+
+function recalcRec(recId, val) {
+  const rec = RECEITAS_PROD.find(r=>r.id===recId);
+  if (!rec) return;
+  const fator = parseFloat(val||0) / rec.base_kg;
+  rec.ingredientes.forEach(ing => {
+    const el = document.getElementById(`calc_${recId}_${ing.nome.replace(/[\s\/\(\)]/g,'_')}`);
+    if (el) el.textContent = fmt(ing.base*fator) + ' ' + ing.un;
+  });
+}
+
+function salvarDisp(recId) {
+  const val = parseFloat(document.getElementById('disp_'+recId).value)||0;
+  const s = load();
+  if (!s.prod_disp) s.prod_disp = {};
+  s.prod_disp[recId] = val;
+  save(s);
+  showToast('Salvo!');
+}
+
+// ============================================================
+// ABA ESTOQUE
+// ============================================================
+function estoqueTab(which, btn) {
+  document.querySelectorAll('.toggle-btn').forEach(b=>{
+    if(b.parentElement===btn.parentElement) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  document.getElementById('estoque-fin').style.display = which==='fin'?'block':'none';
+  document.getElementById('estoque-prod').style.display = which==='prod'?'block':'none';
+}
+
+function renderEstoque() {
+  const s = load(); const day = ensureDay(s,TODAY);
+  // Finalização
+  let html='';
+  CATS_FIN.forEach(cat => {
+    html += `<div class="card"><div class="card-header">${cat.label}</div>`;
+    BASE_FIN[cat.key].forEach(it => {
+      const meta = day.items[it.id]?.meta || it.media;
+      const estq = day.estoque?.[it.id] || 0;
+      const falta = Math.max(0, meta - estq);
+      const cor = falta===0?'var(--green)':falta<meta/2?'var(--yellow)':'var(--orange)';
+      html += `
+        <div class="estoque-row">
+          <div class="estoque-nome">${it.nome}<div class="estoque-meta">Meta: ${meta} un</div></div>
+          <input type="number" class="estoque-input" id="estq_${it.id}" value="${estq}" min="0"
+            oninput="atualizaStatusEstq('${it.id}',${meta},this.value)" style="width:70px">
+          <div class="estoque-status" id="status_${it.id}" style="color:${cor}">${falta===0?'OK':'−'+falta}</div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('estoque-fin-content').innerHTML = html;
+
+  // Produção
+  let html2='';
+  RECEITAS_PROD.forEach(rec => {
+    const estq = s.estoque_prod?.[rec.id] || 0;
+    html2 += `<div class="card"><div class="card-header">${rec.nome}<span class="tag ${rec.tag}" style="float:right">${rec.freq}</span></div>
+      <div class="estoque-row">
+        <div class="estoque-nome">Estoque atual<div class="estoque-meta">Base: ${rec.base_kg}kg/receita</div></div>
+        <input type="number" id="estqp_${rec.id}" value="${estq}" min="0" step="0.1" style="width:70px">
+        <span style="color:var(--muted);font-size:13px">kg</span>
+      </div></div>`;
+  });
+  document.getElementById('estoque-prod-content').innerHTML = html2;
+}
+
+function atualizaStatusEstq(id, meta, val) {
+  const falta = Math.max(0, meta - parseInt(val||0));
+  const el = document.getElementById('status_'+id);
+  if (!el) return;
+  el.textContent = falta===0?'OK':'−'+falta;
+  el.style.color = falta===0?'var(--green)':falta<meta/2?'var(--yellow)':'var(--orange)';
+}
+
+function salvarEstoqueFin() {
+  const s=load(); const day=ensureDay(s,TODAY);
+  if (!day.estoque) day.estoque={};
+  CATS_FIN.forEach(cat => BASE_FIN[cat.key].forEach(it => {
+    const el = document.getElementById('estq_'+it.id);
+    if (el) {
+      const v = parseInt(el.value||0);
+      day.estoque[it.id] = v;
+      // recalc meta
+      const base = it.media;
+      const falta = Math.max(0, base - v);
+      if (day.items[it.id]) day.items[it.id].meta = falta;
+    }
+  }));
+  save(s);
+  showToast('Estoque salvo! Metas atualizadas.');
+  renderFinalizacao();
+}
+
+function salvarEstoqueProd() {
+  const s=load();
+  if (!s.estoque_prod) s.estoque_prod={};
+  RECEITAS_PROD.forEach(rec => {
+    const el=document.getElementById('estqp_'+rec.id);
+    if (el) s.estoque_prod[rec.id] = parseFloat(el.value||0);
+  });
+  save(s);
+  showToast('Estoque de produção salvo!');
+}
+
+// ============================================================
+// ABA CALENDÁRIO
+// ============================================================
+const DIAS_NOME = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+let calViewMode = 'dia';
+let calSelectedKey = TODAY;
+
+function calView(mode, btn) {
+  calViewMode = mode;
+  document.querySelectorAll('.toggle-btn').forEach(b=>{
+    if(b.parentElement===btn.parentElement) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  renderCalendario();
+}
+
+function renderCalendario() {
+  const s=load();
+  const hoje = new Date();
+  const dow = hoje.getDay();
+  const start = new Date(hoje); start.setDate(hoje.getDate()-dow);
+
+  let calHtml='';
+  for (let i=0;i<7;i++) {
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const key=d.toISOString().slice(0,10);
+    const isToday = key===TODAY;
+    const isSel = key===calSelectedKey;
+    const recDia = getReceitasDia(key);
+    const prodCheck = s.prod_check?.[key] || {};
+    const prodDone = recDia.length && recDia.every(r=>prodCheck[r.id]);
+    calHtml+=`
+      <div class="cal-day ${isToday?'today':''} ${isSel?'selected':''}" onclick="selCalDay('${key}',this)">
+        <div class="cal-day-name">${DIAS_NOME[d.getDay()]}</div>
+        <div class="cal-day-num">${d.getDate()}</div>
+        <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">
+          ${recDia.length?(prodDone?'<div class="cal-dot" style="background:var(--green)"></div>':'<div class="cal-dot" style="background:var(--orange)"></div>'):''}
+        </div>
+      </div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=calHtml;
+  if (calViewMode==='semana') renderCalSemana(s);
+  else showCalDetail(calSelectedKey, s);
+}
+
+function selCalDay(key,el) {
+  calSelectedKey=key;
+  document.querySelectorAll('.cal-day').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  if (calViewMode==='semana') renderCalSemana(load());
+  else showCalDetail(key,load());
+}
+
+function toggleProdCheck(dateKey, recId) {
+  const s=load();
+  if (!s.prod_check) s.prod_check={};
+  if (!s.prod_check[dateKey]) s.prod_check[dateKey]={};
+  s.prod_check[dateKey][recId] = !s.prod_check[dateKey][recId];
+  save(s);
+  showCalDetail(dateKey, s);
+  renderCalendario();
+}
+
+function showCalDetail(key,s) {
+  const d=new Date(key+'T12:00:00');
+  const label=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  const recDia=getReceitasDia(key);
+  const prodCheck=s.prod_check?.[key]||{};
+  const prodFeitos=recDia.filter(r=>prodCheck[r.id]).length;
+
+  const emojuDow=['☀️','🥩','🥫','🍞','🎉','🌟','🧂'];
+  const emoji=emojuDow[d.getDay()]||'📋';
+
+  let html=`
+    <div class="card" style="border-color:${recDia.length?'var(--orange)':'var(--border)'}">
+      <div class="card-header" style="font-size:16px">${emoji} ${label}</div>
+      ${recDia.length?`
+        <div class="row">
+          <span class="row-label">Receitas do dia</span>
+          <span class="row-val">${recDia.length} ${recDia.length===1?'receita':'receitas'}</span>
+        </div>
+        <div class="row">
+          <span class="row-label">Progresso</span>
+          <span class="row-val" style="color:${prodFeitos===recDia.length?'var(--green)':'var(--orange)'}">${prodFeitos} / ${recDia.length} concluídas</span>
+        </div>
+        <div style="margin:8px 16px 12px;height:6px;background:var(--border);border-radius:3px">
+          <div style="height:100%;width:${recDia.length?Math.round(prodFeitos/recDia.length*100):0}%;background:${prodFeitos===recDia.length?'var(--green)':'var(--orange)'};border-radius:3px;transition:width .3s"></div>
+        </div>`
+      :`<div class="row"><span class="row-label" style="color:var(--muted)">Nenhuma produção agendada para este dia.</span></div>`}
+    </div>`;
+
+  if (recDia.length) {
+    const grupos={};
+    recDia.forEach(rec=>{ const c=rec.cat||'Outros'; if(!grupos[c])grupos[c]=[]; grupos[c].push(rec); });
+
+    Object.entries(grupos).forEach(([cat,receitas])=>{
+      html+=`<p class="sec">${cat}</p>`;
+      receitas.forEach(rec=>{
+        const feito=prodCheck[rec.id]||false;
+        html+=`
+          <div class="card" style="margin-bottom:10px;${feito?'opacity:.6':''}">
+            <div class="row" style="cursor:pointer" onclick="toggleProdCheck('${key}','${rec.id}')">
+              <div style="display:flex;align-items:center;gap:12px;flex:1">
+                <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${feito?'var(--green)':'var(--orange)'};
+                  background:${feito?'var(--green)':'transparent'};display:flex;align-items:center;justify-content:center;
+                  flex-shrink:0;font-size:13px;color:#fff;transition:all .2s">${feito?'✓':''}</div>
+                <div>
+                  <div style="font-size:15px;font-weight:700">${rec.nome}</div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:2px">${rec.rende} · ${rec.validade}</div>
+                </div>
+              </div>
+              <span class="badge ${feito?'badge-green':'badge-orange'}" style="font-size:12px">${feito?'✓ Feito':'Fazer'}</span>
+            </div>
+            ${rec.obs?`<div style="margin:4px 16px 10px;padding:8px 10px;background:var(--surface2);border-radius:6px;
+              font-size:12px;color:var(--muted);border-left:3px solid var(--orange)">⚙️ ${rec.obs}</div>`:''}
+            ${!feito?`<div style="padding:0 16px 12px">
+              <div style="background:var(--surface2);border-radius:8px;overflow:hidden">
+                <div style="padding:7px 12px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)">Ingredientes</div>
+                ${rec.ingredientes.map((ing,i)=>`
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;${i<rec.ingredientes.length-1?'border-bottom:1px solid var(--border)':''}">
+                    <span style="font-size:13px">${ing.nome}</span>
+                    <span style="font-size:14px;font-weight:800;color:var(--orange)">${fmt(ing.base)} ${ing.un}</span>
+                  </div>`).join('')}
+              </div>
+            </div>`:''}
+          </div>`;
+      });
+    });
+  }
+
+  document.getElementById('cal-detail').innerHTML=html;
+}
+
+function renderCalSemana(s) {
+  let html='<p class="sec">Semana de produção</p>';
+  const hoje=new Date(); const dow=hoje.getDay();
+  const start=new Date(hoje); start.setDate(hoje.getDate()-dow);
+
+  for(let i=0;i<7;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const key=d.toISOString().slice(0,10);
+    const label=DIAS_NOME[d.getDay()]+' '+d.getDate();
+    const recDia=getReceitasDia(key);
+    const prodCheck=s.prod_check?.[key]||{};
+    const prodFeitos=recDia.filter(r=>prodCheck[r.id]).length;
+    const tudo=recDia.length&&prodFeitos===recDia.length;
+
+    html+=`<div class="card" style="cursor:pointer;${key===TODAY?'border-color:var(--orange)':tudo&&recDia.length?'border-color:var(--green)':''}" onclick="calViewDia('${key}')">
+      <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+        <span>${label}${key===TODAY?' <span class="badge badge-orange">HOJE</span>':''}</span>
+        ${tudo?'<span class="badge badge-green">✓ Tudo feito</span>':recDia.length?`<span style="font-size:12px;color:var(--orange)">${prodFeitos}/${recDia.length}</span>`:''}
+      </div>
+      ${recDia.length?`
+        <div style="padding:6px 16px 12px;display:flex;flex-wrap:wrap;gap:5px">
+          ${recDia.map(r=>`<span class="badge ${prodCheck[r.id]?'badge-green':'badge-orange'}">${prodCheck[r.id]?'✓ ':''}${r.nome}</span>`).join('')}
+        </div>`
+      :`<div class="row"><span class="row-label" style="color:var(--muted);font-size:12px">Sem produção agendada</span></div>`}
+    </div>`;
+  }
+  document.getElementById('cal-detail').innerHTML=html;
+}
+
+function calViewDia(key) {
+  calViewMode='dia'; calSelectedKey=key;
+  document.querySelectorAll('.toggle-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  renderCalendario();
+}
+
+// ============================================================
+// ABA COMPRAS
+// ============================================================
+const INSUMOS_MAP = {
+  frango:      {'Frango cru (g)':150,'Pão ciabatta':1,'Alface (folhas)':2,'Tomate (fatias)':2},
+  frango_bacon:{'Frango grelhado (g)':150,'Bacon (fatias)':3,'Pão ciabatta':1,'Alface (folhas)':2,'Tomate (fatias)':2},
+  pernil:      {'Pernil desfiado (g)':180,'Pão ciabatta':1,'Alface (folhas)':2,'Tomate (fatias)':2},
+  pernil_esp:  {'Pernil desfiado (g)':200,'Pão especial':1,'Rúcula (folhas)':3,'Tomate (fatias)':3},
+  caprese:     {'Mussarela (g)':80,'Tomate (fatias)':4,'Manjericão (folhas)':4,'Pão ciabatta':1},
+  caipira:     {'Frango caipira (g)':160,'Pão ciabatta':1,'Alface (folhas)':2,'Tomate (fatias)':2},
+  mignon:      {'Filé mignon (g)':180,'Pão especial':1,'Rúcula (folhas)':3,'Tomate (fatias)':2},
+  carne_pan:   {'Carne de panela (g)':180,'Pão ciabatta':1,'Alface (folhas)':2,'Tomate (fatias)':2},
+  linguica:    {'Linguiça Blumenau (g)':160,'Pão ciabatta':1,'Alface (folhas)':2,'Chucrute (g)':40},
+  cogumelo:    {'Cogumelo refogado (g)':100,'Queijo (g)':60,'Pão ciabatta':1,'Rúcula (folhas)':2},
+  falafel:     {'Falafel (un)':3,'Pão pita':1,'Húmus (g)':50,'Alface (folhas)':2},
+};
+
+function renderCompras() {
+  const dias=parseInt(document.getElementById('dias-sel').value);
+  const totais={};
+  BASE_FIN.sanduiches.forEach(it=>{
+    const ins=INSUMOS_MAP[it.id]||{};
+    Object.entries(ins).forEach(([k,v])=>{ totais[k]=(totais[k]||0)+Math.ceil(v*it.media*dias); });
+  });
+  const combosBase=['frango_bacon','pernil','caprese','caipira','mignon'].reduce((a,id)=>{
+    const f=BASE_FIN.sanduiches.find(x=>x.id===id); return a+(f?f.media:0);
+  },0);
+  const brigTotal=(BASE_FIN.sobremesas.find(x=>x.id==='brigadeiro').media+combosBase)*dias;
+
+  let html=`<div class="card"><div class="card-header">Sanduíches — ${dias} dias</div>`;
+  Object.entries(totais).sort((a,b)=>b[1]-a[1]).forEach(([n,v])=>{
+    html+=`<div class="row"><span class="row-label">${n}</span><span class="row-val">${v.toLocaleString('pt-BR')}</span></div>`;
+  });
+  html+=`</div>`;
+
+  html+=`<div class="card"><div class="card-header">Sobremesas — ${dias} dias</div>
+    <div class="row"><span class="row-label">Brigadeiros (avulso + combos)</span><span class="row-val">${brigTotal}</span></div>`;
+  BASE_FIN.sobremesas.filter(x=>x.id!=='brigadeiro').forEach(it=>{
+    html+=`<div class="row"><span class="row-label">${it.nome}</span><span class="row-val">${it.media*dias}</span></div>`;
+  });
+  html+=`</div>`;
+
+  html+=`<div class="card"><div class="card-header">Wraps — ${dias} dias</div>`;
+  BASE_FIN.wraps.forEach(it=>{html+=`<div class="row"><span class="row-label">${it.nome}</span><span class="row-val">${it.media*dias}</span></div>`;});
+  html+=`</div>`;
+
+  html+=`<div class="card"><div class="card-header">Saladas — ${dias} dias</div>`;
+  BASE_FIN.saladas.forEach(it=>{html+=`<div class="row"><span class="row-label">${it.nome}</span><span class="row-val">${it.media*dias}</span></div>`;});
+  html+=`</div>`;
+
+  document.getElementById('compras-content').innerHTML=html;
+}
+
+// ============================================================
+// ABA RELATÓRIO
+// ============================================================
+function handleFile(file) {
+  if (!file) return;
+  const zone=document.getElementById('upload-zone');
+  zone.innerHTML='<div class="upload-icon">⏳</div><div class="upload-title">Processando...</div><div class="upload-sub">'+file.name+'</div>';
+  setTimeout(()=>{
+    // Simula extração (dados reais viriam de parser)
+    const s=load();
+    if (!s.relatorios) s.relatorios=[];
+    s.relatorios.unshift({ nome:file.name, data:new Date().toLocaleDateString('pt-BR'), size:(file.size/1024).toFixed(0)+'KB' });
+    save(s);
+    zone.innerHTML='<div class="upload-icon">✅</div><div class="upload-title">Relatório carregado</div><div class="upload-sub">'+file.name+'</div>';
+    renderRelatorioResult();
+    renderRelatorioHistorico();
+  },1200);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('dragover');
+  const f=e.dataTransfer.files[0]; if(f) handleFile(f);
+}
+
+function renderRelatorioResult() {
+  const el=document.getElementById('upload-result');
+  el.style.display='block';
+  el.innerHTML=`
+    <p class="sec">Resumo gerado automaticamente</p>
+    <div class="card"><div class="card-header">Sanduíches — mês anterior</div>
+      ${BASE_FIN.sanduiches.map(it=>`<div class="row"><span class="row-label">${it.nome}</span>
+        <span class="row-val">${it.media*31} un/mês</span></div>`).join('')}
+    </div>
+    <div class="card"><div class="card-header">Calendário de produção gerado</div>
+      <div class="row"><span class="row-label">Frango grelhado</span><span class="badge badge-blue">Toda terça</span></div>
+      <div class="row"><span class="row-label">Pernil desfiado</span><span class="badge badge-orange">2x/mês</span></div>
+      <div class="row"><span class="row-label">Carne de panela</span><span class="badge badge-orange">2x/mês</span></div>
+      <div class="row"><span class="row-label">Molhos e maioneses</span><span class="badge" style="background:rgba(168,85,247,.15);color:#a855f7">Toda quarta</span></div>
+      <div class="row"><span class="row-label">Brigadeiro</span><span class="badge badge-green">Toda semana</span></div>
+    </div>`;
+}
+
+function renderRelatorioHistorico() {
+  const s=load();
+  const hist=s.relatorios||[];
+  if (!hist.length) {
+    document.getElementById('relatorio-historico').innerHTML=`<p style="color:var(--muted);font-size:13px">Nenhum relatório enviado ainda.</p>`;
+    return;
+  }
+  let html='<div class="card">';
+  hist.forEach(r=>{
+    html+=`<div class="row"><span class="row-label">${r.nome}<div style="font-size:12px;color:var(--muted)">${r.data} · ${r.size}</div></span>
+      <span class="badge badge-green">Importado</span></div>`;
+  });
+  html+='</div>';
+  document.getElementById('relatorio-historico').innerHTML=html;
+}
+
+// ============================================================
+// TABS
+// ============================================================
+const tabRenders = {
+  finalizacao: renderFinalizacao,
+  producao: renderProducao,
+  estoque: renderEstoque,
+  calendario: renderCalendario,
+  compras: renderCompras,
+  relatorio: ()=>{ renderRelatorioHistorico(); }
+};
+
+function goTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+  (tabRenders[tab]||function(){})();
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function showToast(msg) {
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 20px;border-radius:20px;font-weight:700;font-size:14px;z-index:999;transition:opacity .3s';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2000);
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+// ============================================================
+// INIT
+// ============================================================
+seedSemana();
+renderHeader();
+renderFinalizacao();
+renderRelatorioHistorico();
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" role="img" aria-labelledby="title desc">
+  <title id="title">FOQUI — Itens Receita</title>
+  <desc id="desc">Tela vertical de tablet com receitas organizadas em uma grade de três colunas. Os cartões mostram somente o nome da receita. Um cartão selecionado aparece em rosa com texto verde escuro.</desc>
+  <defs>
+    <linearGradient id="screenBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#004735"/>
+      <stop offset="1" stop-color="#003C2F"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#25292A"/>
+      <stop offset=".5" stop-color="#050707"/>
+      <stop offset="1" stop-color="#343839"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <!-- Tablet hardware -->
+  <rect x="54" y="58" width="916" height="1420" rx="66" fill="#001E17" opacity=".45" filter="url(#shadow)"/>
+  <rect x="48" y="54" width="928" height="1428" rx="68" fill="url(#frame)" stroke="#777D7D" stroke-width="5"/>
+  <rect x="70" y="76" width="884" height="1384" rx="52" fill="#020706"/>
+  <circle cx="492" cy="91" r="7" fill="#242A2B"/>
+  <circle cx="492" cy="91" r="3" fill="#0B3C4A"/>
+  <circle cx="535" cy="91" r="7" fill="#242A2B"/>
+
+  <!-- Screen -->
+  <rect x="95" y="116" width="834" height="1304" rx="28" fill="url(#screenBg)"/>
+
+  <!-- Brand mark -->
+  <path d="M145 151 L157 137 L171 145 L185 134 L196 150 L213 149 L212 168 L226 180 L212 193 L216 211 L197 213 L187 230 L171 218 L155 227 L149 209 L131 204 L139 187 L128 171 L145 164 Z" fill="#F58BAA"/>
+  <path d="M166 160 L188 160 L183 171 L171 171 L166 202 L153 202 Z" fill="#004735"/>
+  <text x="240" y="187" fill="#F7EAD2" font-family="Arial, sans-serif" font-size="21" font-weight="700" letter-spacing="2">FOQUI</text>
+  <rect x="620" y="145" width="276" height="54" rx="27" fill="none" stroke="#08745C" stroke-width="2"/>
+  <text x="758" y="179" text-anchor="middle" fill="#F7EAD2" font-family="Arial, sans-serif" font-size="18">sexta-feira, 30 de outubro</text>
+
+  <!-- Page header -->
+  <circle cx="157" cy="284" r="34" fill="#0C624D"/>
+  <path d="M169 284 H145 M145 284 L157 272 M145 284 L157 296" fill="none" stroke="#F7EAD2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="218" y="298" fill="#F7EAD2" font-family="Georgia, serif" font-size="58" font-weight="700">Receitas</text>
+  <text x="218" y="341" fill="#A8C9BB" font-family="Arial, sans-serif" font-size="24">Selecione uma receita para consultar os detalhes.</text>
+
+  <!-- Recipe cards: 3 columns, names only -->
+  <g font-family="Georgia, serif" font-size="27" font-weight="700" text-anchor="middle">
+    <!-- Row 1 -->
+    <rect x="126" y="402" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="244" y="520" fill="#F7EAD2">Cogumelo</text>
+    <text x="244" y="555" fill="#F7EAD2">Refogado</text>
+
+    <rect x="394" y="402" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="512" y="520" fill="#F7EAD2">Frango</text>
+    <text x="512" y="555" fill="#F7EAD2">Grelhado</text>
+
+    <rect x="662" y="402" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="780" y="520" fill="#F7EAD2">Maionese</text>
+    <text x="780" y="555" fill="#F7EAD2">de Alho</text>
+
+    <!-- Row 2 -->
+    <rect x="126" y="652" width="236" height="226" rx="24" fill="#F58BAA" stroke="#F58BAA" stroke-width="2"/>
+    <text x="244" y="770" fill="#004735">Maionese</text>
+    <text x="244" y="805" fill="#004735">de Bacon</text>
+
+    <rect x="394" y="652" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="512" y="770" fill="#F7EAD2">Maionese de</text>
+    <text x="512" y="805" fill="#F7EAD2">Limão Siciliano</text>
+
+    <rect x="662" y="652" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="780" y="770" fill="#F7EAD2">Maionese de</text>
+    <text x="780" y="805" fill="#F7EAD2">Pesto</text>
+
+    <!-- Row 3 -->
+    <rect x="126" y="902" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="244" y="1000" fill="#F7EAD2">Maionese de</text>
+    <text x="244" y="1035" fill="#F7EAD2">Tomate Seco</text>
+
+    <rect x="394" y="902" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="512" y="1020" fill="#F7EAD2">Mignon</text>
+
+    <rect x="662" y="902" width="236" height="226" rx="24" fill="#064F3D" stroke="#08745C" stroke-width="2"/>
+    <text x="780" y="1020" fill="#F7EAD2">Pão de Queijo</text>
+  </g>
+
+  <text x="512" y="1290" text-anchor="middle" fill="#6FAE99" font-family="Arial, sans-serif" font-size="17" letter-spacing="1.5">TOQUE EM UM CARTÃO PARA ABRIR A RECEITA</text>
+</svg>

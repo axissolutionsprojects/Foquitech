@@ -835,6 +835,7 @@ document.getElementById('topbar-user').textContent = session.user.user_metadata?
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+window.esc = esc;
 
 // ── Fetch com Authorization header ────────────────────────────
 function _authFetch(url, opts = {}) {

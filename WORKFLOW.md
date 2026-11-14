@@ -1,8 +1,8 @@
-# WORKFLOW v1 Oficial — Foqui Sanduíches · Painel Operacional
+# WORKFLOW v2 Oficial — Foqui Sanduíches · Painel Operacional
 
-**Versão:** 1.0  
-**Data:** 31/10/2026  
-**Status:** Produção local · Staging/Deploy pendente
+**Versão:** 2.0  
+**Data:** 01/11/2026  
+**Status:** Produção local · Deploy pendente · Admin Panel completo
 
 ---
 
@@ -33,6 +33,12 @@ Local → staging (branch staging) → produção (branch main)
 
 ## Arquivos do sistema
 
+### Painel Administrativo (NOVO — v2)
+| Arquivo | Rota Vercel | Função |
+|---------|-------------|--------|
+| `admin.html` | `/admin` | Painel administrativo completo — gestor |
+| `login.html` | `/login` | Autenticação Supabase Auth |
+
 ### Painéis tablet (operacional — uso diário)
 | Arquivo | Rota Vercel | Função |
 |---------|-------------|--------|
@@ -40,34 +46,86 @@ Local → staging (branch staging) → produção (branch main)
 | `producao-tablet.html` | `/producao` | Painel de Produção — receitas, calendário, estoque, compras |
 | `finalizacao-tablet.html` | `/finalizacao` | Painel de Finalização — checklist, contagem, estoque |
 
+### API Routes (Vercel Serverless)
+| Arquivo | Método | Função |
+|---------|--------|--------|
+| `api/create-user.js` | POST | Cria operador via Supabase Admin Auth |
+| `api/get-users.js` | GET | Lista todos os usuários ativos |
+| `api/update-user.js` | PATCH | Atualiza nome/perfil do operador |
+| `api/delete-user.js` | DELETE | Exclui operador (preserva logs no banco) |
+
 ### Infra e configuração
 | Arquivo | Função |
 |---------|--------|
 | `vercel.json` | Configuração de deploy e rotas |
-| `.env.example` | Template de variáveis de ambiente |
-| `.gitignore` | Exclusões do repositório |
+| `.env.local` | Credenciais Supabase (nunca commitar) |
 | `supabase/schema.sql` | Schema do banco de dados |
-| `supabase/config.js` | Cliente Supabase (pronto para ativar) |
-| `supabase/README.md` | Instruções de setup do banco |
+| `CONTEXT.md` | Estado atual do projeto (atualizado a cada sessão) |
+| `WORKFLOW.md` | Este documento |
 
 ### Assets e documentação
 | Pasta | Conteúdo |
 |-------|---------|
 | `Id Visual/` | Design System oficial, fontes, logo, paleta |
-| `assets/icons/` | Ícones SVG inline |
-| `TELAS/` | Mockups PNG 1024×1536px de todas as 25 telas |
+| `assets/` | Imagens, avatar |
 | `Docs base/` | Relatório de vendas, rendimentos, livro de receitas |
 
 ---
 
 ## Funcionalidades entregues
 
+### Painel Administrativo (admin.html) — v2
+#### Dashboard
+- 6 KPI cards compactos em grade 3×2 com mini-sparklines (Chart.js)
+- Cards clicáveis: Faturamento Semanal, Top Seller e Projeção abrem páginas de detalhe
+- Páginas de detalhe: Faturamento (filtros Semanal/Diário/Mensal/Anual), Ticket Médio, Margem Bruta, Projeção
+- Drag-and-drop para reordenar cards, persistido em `localStorage['foqui_dash_order']`
+- Gráficos com eixos X/Y legíveis, fonte numérica Inter em todos os valores
+
+#### Receitas (edição inline)
+- Tabela agrupada por categoria: Proteínas · Molhos · Pães · Doces
+- Ordem alfabética dentro de cada categoria
+- Clique no nome → expande ingredientes editáveis (nome + quantidade)
+- Adicionar e remover ingredientes inline, Salvar persiste em `localStorage['foqui_rec_data']`
+- **Sincronização automática com tablet de produção** (quantidades atualizadas no próximo acesso)
+
+#### Estoque
+- 5 cards em grade 2 colunas (Proteínas, Pães, Molhos, Doces, Temperos)
+- Todos os itens visíveis sem accordion — barra de nível colorida (verde/amarelo/rosa)
+- Modo edição: campos de % editáveis, persistência em `localStorage['foqui_estoque']`
+
+#### Relatórios
+- Importação de relatório CSV/Excel (bloco grande em destaque)
+- 3 cards de relatórios de vendas (estilo dashboard compacto)
+- Logs de acesso colapsáveis com colunas: Ação · Valor inserido · Quantidade
+
+#### Usuários e Acesso
+- Listagem de operadores com badge de perfil (Admin/Operador)
+- Criar operador: nome, usuário, perfil, senha → email `@foquitech.internal`
+- Editar operador: nome e perfil via modal
+- **Excluir operador:** remove do painel, preserva logs de auditoria no Supabase
+- Auth via Supabase Auth (`signInWithPassword`)
+
+#### Pré-visualizações EM BREVE
+- **Gestão de Ponto** — mockup com KPIs + tabela de registro diário (dados fictícios)
+- **Gestão de RH** — mockup com KPIs + tabela de equipe (contrato, férias, status)
+- **Gestão Financeira** — mockup com KPIs + DRE simplificado + Contas a Pagar
+- Banner rosa em todas: "Pré-visualização · Dados Fictícios · Esta seção ainda não está ativa"
+
+#### Demais abas funcionais
+- **Programação** — calendário semanal editável com override de itens
+- **Vendas / Sanduíches / Combos / Top Seller** — tabelas analíticas com filtros
+- **Configurações** — informações do sistema
+
+---
+
 ### Produção (25 views navegáveis)
 - **Home 2×2** — 4 módulos em grade, navegação por toque, card selecionado em rosa
-- **Receitas** — grade responsiva, 15 receitas com card navegável
+- **Receitas** — grade responsiva, 14 receitas com card navegável
 - **Detalhe de receita** — tabela de ingredientes + calculadora proporcional em tempo real
   - Selecionar qualquer ingrediente como base → todos os outros recalculados
   - Botão Salvar com feedback visual
+  - **Sync automático** do admin: quantidades atualizadas via `localStorage['foqui_rec_data']`
 - **Programação diária** — janela de 3 dias navegável, dia vigente destacado, itens clicáveis abrem receita
 - **Estoque** — categorias expansíveis, barra de nível, status ok/baixo/zerado, persistência em localStorage
 - **Compras** — lista de itens prioritários com quantidades
@@ -184,37 +242,76 @@ git push -u origin staging
 
 | Dimensão | Valor |
 |----------|-------|
-| Sessões de desenvolvimento | ~8 sessões longas |
-| Horas estimadas | ~22–28 horas |
-| Arquivos HTML (SPAs) | 3 arquivos principais |
-| Views navegáveis | 25 telas |
-| Receitas com calculadora | 15 receitas |
-| Linhas de código (total) | ~1.700 linhas |
-| Assets embutidos | 2 fontes base64 + logo SVG + ícones |
-| Mockups gerados | 25 PNGs @ 1024×1536px |
+| Sessões de desenvolvimento | ~14 sessões longas |
+| Horas estimadas | ~40–55 horas |
+| Arquivos principais | 5 (admin, 2 tablets, login, index) |
+| API routes serverless | 4 endpoints |
+| Views navegáveis (tablets) | 25 telas |
+| Abas admin funcionais | 14 abas (+ 3 mockups EM BREVE) |
+| Receitas gerenciadas | 14 receitas com edição inline |
+| Linhas de código (total) | ~3.200+ linhas |
+| Assets embutidos | 2 fontes base64 + logo + avatar |
+| Integrações ativas | Supabase Auth + Admin API + audit_logs |
 
 ---
 
 ## Próximos passos
 
 - [ ] `git init` + push para GitHub
-- [ ] Deploy no Vercel (staging primeiro)
-- [ ] Criar projetos Supabase (staging e produção)
-- [ ] Executar schema.sql nos dois projetos
-- [ ] Migrar localStorage → Supabase (estoque, checklist, contagem)
-- [ ] Autenticação por colaborador (Supabase Auth)
-- [ ] Upload de relatório de vendas → calendário gerado automaticamente
-- [ ] Checklist de limpeza com rodízio entre áreas
-- [ ] Histórico diário de produção (log)
+- [ ] Deploy no Vercel (staging primeiro) — `npx vercel --prod`
+- [ ] Ativar Gestão de Ponto (jornada real dos colaboradores)
+- [ ] Ativar Gestão de RH (cadastro de colaboradores)
+- [ ] Ativar Gestão Financeira (DRE + fluxo de caixa)
+- [ ] Migrar receitas do localStorage → Supabase (sync entre dispositivos em tempo real)
+- [ ] Tablet: render dinâmico de receitas a partir de `foqui_rec_data` (novos ingredientes aparecem)
+- [ ] Upload de relatório de vendas → gera calendário automaticamente
 - [ ] Deploy em produção após validação em staging
 
 ---
 
-## Estimativa de valor
+## Estimativa de valor — v2
+
+### O que foi entregue além do v1
+
+| Funcionalidade adicionada | Valor de mercado |
+|--------------------------|-----------------|
+| Painel administrativo completo (SPA autenticada) | R$ 8.000 – R$ 14.000 |
+| Dashboard com 6 KPIs + sparklines + detalhes clicáveis | R$ 3.000 – R$ 5.000 |
+| CRUD de usuários via Supabase Admin API + audit trail | R$ 4.000 – R$ 7.000 |
+| Receitas com edição inline + sync para tablets | R$ 3.500 – R$ 6.000 |
+| Estoque visual estilo dashboard (5 categorias) | R$ 1.500 – R$ 3.000 |
+| Relatórios com importação + análise visual | R$ 2.500 – R$ 4.500 |
+| Mockups EM BREVE (Ponto · RH · Financeiro) | R$ 1.500 – R$ 2.500 |
+| Logs de auditoria estruturados (ação + valor + qtd) | R$ 2.000 – R$ 3.500 |
+
+### Comparativo de valor total (v1 + v2)
 
 | Referência | Valor |
 |------------|-------|
-| Agência digital (escopo equivalente) | R$ 18.000 – R$ 35.000 |
-| Freelancer sênior (80–100h) | R$ 12.000 – R$ 20.000 |
-| SaaS equivalente (mensalidade) | R$ 400 – R$ 900/mês |
-| **Valor estimado entregue** | **R$ 15.000 – R$ 22.000** |
+| Agência digital (escopo equivalente) | R$ 45.000 – R$ 80.000 |
+| Freelancer sênior (140–180h de projeto) | R$ 28.000 – R$ 45.000 |
+| SaaS equivalente (mensalidade recorrente) | R$ 800 – R$ 1.800/mês |
+| SaaS equivalente (licença anual) | R$ 9.600 – R$ 21.600/ano |
+| **Valor estimado entregue (v1 + v2)** | **R$ 35.000 – R$ 55.000** |
+
+### Justificativa de cobrança
+
+O sistema entregue inclui funcionalidades que sistemas SaaS cobram como módulos premium separados:
+
+| Módulo | Exemplos de mercado | Mensalidade típica |
+|--------|--------------------|--------------------|
+| Controle de estoque | Bling, Omie | R$ 150–350/mês |
+| Gestão de receitas e produção | NotaCerta, Saipos | R$ 200–500/mês |
+| Painel administrativo + relatórios | Goomer, Anota AI | R$ 300–600/mês |
+| Gestão de usuários + auditoria | — (custom) | R$ 400–800/mês |
+| **Total equivalente em SaaS** | — | **R$ 1.050–2.250/mês** |
+
+> A plataforma Foqui elimina todos esses custos recorrentes, roda sob infraestrutura própria, e é 100% personalizada para a operação da loja. O investimento se paga em **1–3 meses** de comparação com alternativas de mercado.
+
+### Modelo de precificação sugerido
+
+| Modalidade | Valor |
+|------------|-------|
+| Licença perpétua (entrega única) | R$ 18.000 – R$ 25.000 |
+| Licença + suporte mensal (6 meses) | R$ 12.000 + R$ 800/mês |
+| SaaS white-label (para outras lanchonetes) | R$ 400–900/mês por cliente |
