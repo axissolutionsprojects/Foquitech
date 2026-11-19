@@ -1,6 +1,6 @@
 # CONTEXT — Foqui Sanduíches · Painel Operacional
-**Última atualização:** 14/11/2026
-**Cache SW atual:** `foqui-v50`
+**Última atualização:** 19/11/2026
+**Cache SW atual:** `foqui-v58`
 **Deploy:** https://foquitech.vercel.app
 
 ---
@@ -9,37 +9,59 @@
 
 | Rota | Arquivo | Status |
 |------|---------|--------|
-| `/` | `index.html` | ✅ v50 — esm.sh pinado |
+| `/` | `index.html` | ✅ v58 |
 | `/producao` | `producao-tablet.html` | ✅ Estável |
 | `/finalizacao` | `finalizacao-tablet.html` | ✅ Estável |
-| `/atendimento` | `atendimento-tablet.html` | ✅ v50 — sync indicator, toast, retry upload, logout limpa foqui_ |
-| `/admin` | `admin.html` | ✅ v50 — API auth guard, esc(), _authFetch, app_metadata |
-| `/login` | `login.html` | ✅ v50 — esm.sh pinado |
+| `/atendimento` | `atendimento-tablet.html` | ✅ v58 — fotos nomeadas HH-MM-SS_(nome_item).jpg |
+| `/admin` | `admin.html` | ✅ v58 — Realtime + notif push + voz FOQUI |
+| `/login` | `login.html` | ✅ Estável |
 
 ---
 
-## Segurança — fixes aplicados (v50)
+## Checklist — totais definitivos
 
-### CRÍTICOS
-- **C1 — Privilege escalation:** admin.html agora verifica SOMENTE `app_metadata.perfil` (imutável pelo usuário). Antes verificava `user_metadata` primeiro, que qualquer operador podia alterar via `updateUser()`
-- **C2 — API routes sem auth:** todos os 4 endpoints (`/api/create-user`, `/api/update-user`, `/api/delete-user`, `/api/get-users`) agora verificam Bearer token + `app_metadata.perfil === 'admin'` via `api/_auth.js`
-- **C3 — perfil em user_metadata:** `create-user.js` agora usa `app_metadata: { perfil }` + `update-user.js` atualiza `app_metadata` via Admin API
+| Tab | Total itens | IDs de controle |
+|-----|------------|-----------------|
+| Abertura (AI) | 60 | aber-1 … aber-45d |
+| Fechamento (FI) | 59 | fech-1c … fech-46 |
 
-### ALTOS
-- **A1 — XSS admin:** função `esc()` adicionada; aplicada em `r.responsavel`, `u.nome`, `u.perfil`, `f.item_id` em todos os innerHTML com dados do banco
-- **A2 — XSS topbar operador:** `b.innerHTML` com `nome` substituído por `textContent` via DOM
-- **A3 — getPublicUrl em bucket privado:** `uploadFoto` agora salva o `path` em vez de URL pública; `_storagePath()` aceita tanto URL quanto path direto (retrocompatível)
+**Itens com foto obrigatória:**
+- `ABER_FOTO` (16 ids): aber-7b, aber-20, aber-20b, aber-26b, aber-28, aber-31, aber-32b–32f, aber-39, aber-44b, aber-45b–45d
+- `FECH_FOTO` (18 ids): fech-1c, fech-1d, fech-1b, fech-2b, fech-7, fech-8b, fech-12, fech-12b, fech-14b, fech-15, fech-18, fech-18b, fech-18c, fech-20b, fech-27, fech-27b, fech-33b, fech-42
 
-### MÉDIOS
-- **M1 — Headers HTTP:** `vercel.json` com `X-Frame-Options: DENY`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy: camera=self`
-- **M2 — esm.sh pinado:** `@2.49.1` em todos os 4 arquivos HTML
-- **M3 — SW cache:** excluídos `supabase.co`, `esm.sh` e `qrserver.com` do cache do SW
-- **M4 — Logout:** limpa chaves `foqui_*` além de `sb-*` no localStorage
+---
 
-### UX
-- **U2 — Sync indicator:** ícone `↻` / `✓` / `⚠` no topbar do operador mostra estado de sincronização em tempo real
-- **U3 — Retry upload:** botão "⚠ tentar de novo" ao lado da foto quando upload falha; re-usa base64 do localStorage
-- **U1 — Toasts:** `_showToast()` substitui `alert()` nos erros de fotos faltando e erro ao salvar (non-blocking, auto-fecha em 4s)
+## Fotos — convenção de nomeação (v58)
+
+Formato do path no Storage:
+```
+{uid}/{YYYY-MM-DD}/{tab}/HH-MM-SS_(Nome_do_Item).jpg
+```
+- Hora exata no momento do upload
+- Nome extraído do `.at-lbl` do item no DOM (automático, sem mapa manual)
+- Acentos removidos, espaços/especiais → `_`
+
+---
+
+## Admin — relatórios de checklist
+
+- `_renderAtRelList` e `showAtendDet`: ambos usam `totalItens = 55` e `pct = r.concluido_at ? 100 : (r.progresso || Math.round(nItens/totalItens*100))`
+- Sort: `concluido_at DESC nullsFirst:false` (concluídos primeiro)
+- Auto-refresh: 30s quando aba relatorios está ativa
+- **Realtime:** subscription `foqui-checklist-realtime` em `atendimento_sessoes` → `loadAtendRel()` instantâneo + notificação push com `speechSynthesis` voz "FOQUI" ao `concluido_at` aparecer
+
+---
+
+## Segurança — fixes aplicados (v50+)
+
+- **C1** `app_metadata.perfil` para verificação de admin (imutável pelo usuário)
+- **C2** API routes com Bearer token + perfil admin
+- **C3** `create-user` / `update-user` usam `app_metadata`
+- **A1** `esc()` anti-XSS em todos os innerHTML com dados do banco; `window.esc = esc` para acessar fora do module
+- **A3** Fotos salvas por PATH (não URL pública), signed URLs de 1h no admin
+- **M1** Headers HTTP via `vercel.json`
+- **M2** `esm.sh` pinado `@2.49.1`
+- **M3** SW não cacheia supabase/esm/qrserver
 
 ---
 
@@ -59,9 +81,9 @@ Shared helper: `api/_auth.js` — verifica JWT + `app_metadata.perfil === 'admin
 ## Supabase
 - Projeto: `dmqvxrvazwtpqzkgxhcb`
 - Admin user: `adm01@foquitech.internal` (app_metadata.perfil = 'admin' ✓)
-- Bucket `atendimento`: privado, fotos salvas por PATH (não URL pública), signed URLs de 1h no admin
+- Bucket `atendimento`: privado, fotos por PATH, signed URLs de 1h no admin
 
 ## Próximos passos
+- Web Push real (admin fechado): VAPID keys + endpoint Vercel + subscription salva no banco
 - Ativar Gestão de Ponto / RH / Financeiro (mockups prontos)
-- Notificação push ao concluir turno
 - Filtro por data no relatório admin
