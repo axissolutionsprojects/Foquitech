@@ -2124,6 +2124,25 @@ async function loadAtendRel(tab) {
   _renderAtRelList();
 }
 
+const _ITEM_NOMES = {
+  'aber-7b':'Lixeiras do atendimento vazias','aber-20':'Ar condicionado do salão desligado',
+  'aber-20b':'Lixeira do salão vazia','aber-26b':'Banheiro do salão — organizado',
+  'aber-28':'Refrigerador 5 ligado e portas fechadas','aber-31':'Refrigerador 4 ligado e portas fechadas',
+  'aber-32b':'Lixeira da cozinha vazia e limpa','aber-32c':'Ralo limpo 1','aber-32d':'Ralo limpo 2',
+  'aber-32e':'Ralo limpo 3','aber-32f':'Lixeira da cozinha vazia','aber-39':'Refrigerador 6 ligado e portas fechadas',
+  'aber-44b':'Lavanderia — luz apagada e ambiente organizado','aber-45b':'Vestiário — organizado',
+  'aber-45c':'Banheiro dos fundos — organizado','aber-45d':'Lixeira do banheiro vazia',
+  'fech-1c':'Banheiro dos fundos — organizado','fech-1d':'Lixeira do banheiro vazia',
+  'fech-1b':'Vestiário — organizado','fech-2b':'Lavanderia — organizada',
+  'fech-7':'Refrigerador 6 ligado e portas fechadas','fech-8b':'Ralo limpo 1',
+  'fech-12':'Ar condicionado da cozinha desligado','fech-12b':'Ralo limpo 2',
+  'fech-14b':'Lixeira da cozinha vazia e limpa','fech-15':'Refrigerador 4 ligado e portas fechadas',
+  'fech-18':'Refrigerador 5 ligado e portas fechadas','fech-18b':'Ralo limpo 3',
+  'fech-18c':'Lixeira da cozinha vazia','fech-20b':'Banheiro do salão — organizado',
+  'fech-27':'Ar condicionado do salão desligado','fech-27b':'Lixeira do salão vazia',
+  'fech-33b':'Lixeiras do atendimento vazias','fech-42':'Registro geral de gás fechado'
+};
+
 async function showAtendDet(date) {
   const det = document.getElementById('atend-rel-detail');
   const title = document.getElementById('atend-det-title');
@@ -2173,11 +2192,12 @@ async function showAtendDet(date) {
       grid.innerHTML = fotosArr.map(f => {
         const path = _storagePath(f.foto_url);
         const su = path && urlMap[path] ? urlMap[path] : f.foto_url;
-        const safeLabel = f.item_id.replace(/'/g,"&#39;");
+        const nomeItem = _ITEM_NOMES[f.item_id] || f.item_id;
+        const safeLabel = nomeItem.replace(/'/g,"&#39;");
         const safeSu = su.replace(/'/g,'%27');
-        return `<div style="text-align:center;cursor:pointer;" onclick="openPhotoLightbox('${safeSu}','${safeLabel}')">
+        return `<div style="text-align:center;cursor:pointer;max-width:100px;" onclick="openPhotoLightbox('${safeSu}','${safeLabel}')">
           <img src="${su}" style="width:100px;height:76px;border-radius:10px;object-fit:cover;border:1px solid var(--border);" onerror="this.style.opacity='.3'">
-          <div style="font-size:10px;color:var(--muted);margin-top:3px;">${esc(f.item_id)}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;line-height:1.3;">${esc(nomeItem)}</div>
         </div>`;
       }).join('');
     }
