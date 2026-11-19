@@ -828,6 +828,41 @@ window._sb = sb;
 window._session = session;
     document.body.style.visibility='visible';
 
+// ── Realtime — atualização instantânea + notificação push ─────
+function _foquiVoz() {
+  try {
+    const u = new SpeechSynthesisUtterance('FOQUI');
+    u.lang = 'pt-BR'; u.rate = 0.85; u.pitch = 1.1; u.volume = 1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch(_) {}
+}
+function _foquiNotif(responsavel, tipo) {
+  const title = `Checklist enviado — ${tipo === 'aber' ? 'Abertura' : 'Fechamento'}`;
+  const body = `${responsavel} concluiu o checklist`;
+  _foquiVoz();
+  if (Notification.permission === 'granted') {
+    try { new Notification(title, { body, icon: '/assets/icon-192.png', badge: '/assets/icon-192.png', tag: 'foqui-checklist', renotify: true }); } catch(_) {}
+  } else if (Notification.permission === 'default') {
+    Notification.requestPermission().then(p => { if(p === 'granted') try { new Notification(title, { body, icon: '/assets/icon-192.png', tag: 'foqui-checklist', renotify: true }); } catch(_) {} });
+  }
+}
+// Solicita permissão de notificação ao carregar o admin
+if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+// Subscrição Realtime — dispara ao INSERT ou UPDATE em atendimento_sessoes
+sb.channel('foqui-checklist-realtime')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'atendimento_sessoes' }, payload => {
+    // Atualiza lista se aba relatorios estiver ativa
+    if (document.getElementById('tab-relatorios')?.classList.contains('active')) loadAtendRel();
+    // Notifica apenas quando operador conclui (concluido_at aparece pela primeira vez)
+    const novo = payload.new || {};
+    const velho = payload.old || {};
+    if (novo.concluido_at && !velho.concluido_at) {
+      _foquiNotif(novo.responsavel || 'Operador', novo.tab || '');
+    }
+  })
+  .subscribe();
+
 // Nome do usuário na topbar
 document.getElementById('topbar-user').textContent = session.user.user_metadata?.nome || session.user.email?.split('@')[0] || '';
 
@@ -2107,9 +2142,9 @@ async function showAtendDet(date) {
   if (!sessoes||!sessoes.length) { body.innerHTML='<div style="color:var(--muted)">Sem dados.</div>'; return; }
   const r = sessoes[0];
   const hora = r.concluido_at ? new Date(r.concluido_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : null;
-  const totalItens = _atRelTab==='fech'?53:49;
+  const totalItens = 55;
   const nItens = Object.keys(r.itens_concluidos||{}).length;
-  const pct = r.progresso ?? Math.round(nItens/totalItens*100);
+  const pct = r.concluido_at ? 100 : (r.progresso || Math.round(nItens/totalItens*100));
   const statusHtml = r.concluido_at
     ? `<span style="background:rgba(126,207,178,.15);border:1.5px solid var(--verde);border-radius:20px;padding:4px 12px;color:var(--verde);font-size:12px;font-weight:700;">✓ Concluído às ${hora}</span>`
     : `<span style="background:rgba(243,198,94,.1);border:1.5px solid rgba(243,198,94,.35);border-radius:20px;padding:4px 12px;color:#F3C65E;font-size:12px;font-weight:700;">↻ Em andamento — ${pct}%</span>`;
