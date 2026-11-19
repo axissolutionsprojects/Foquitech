@@ -872,7 +872,13 @@ window.showTab = function(tabId) {
   document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
   sidebar.classList.remove('open');
   overlay.classList.remove('open');
-  if(tabId === 'relatorios') { loadRelatorios(); loadAtendRel(); }
+  if(tabId === 'relatorios') {
+    loadRelatorios(); loadAtendRel();
+    if(_atRelTimer) clearInterval(_atRelTimer);
+    _atRelTimer = setInterval(() => { if(document.getElementById('tab-relatorios')?.classList.contains('active')) loadAtendRel(); }, 30000);
+  } else {
+    if(_atRelTimer){ clearInterval(_atRelTimer); _atRelTimer = null; }
+  }
   if(tabId === 'usuarios') loadUsuarios();
   if(tabId === 'estoque') loadEstoque();
   if(tabId === 'fat-semanal') setTimeout(initFatSemanal, 50);
@@ -1996,6 +2002,7 @@ renderFilteredData('vendas', 'semana');
 let _atRelTab = 'aber';
 let _atRelPage = 4;
 let _atRelAll = [];
+let _atRelTimer = null;
 
 function _renderAtRelList() {
   const list = document.getElementById('atend-rel-list');
@@ -2017,7 +2024,7 @@ function _renderAtRelList() {
     const r = rows[0];
     const nItens = Object.keys(r.itens_concluidos||{}).length;
     const nFotos = Object.keys(r.fotos||{}).length;
-    const pct = r.progresso ?? Math.round(nItens/totalItens*100);
+    const pct = r.concluido_at ? 100 : (r.progresso || Math.round(nItens/totalItens*100));
     const concluido = !!r.concluido_at;
     const hora = r.concluido_at ? new Date(r.concluido_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : null;
     const badgeHtml = concluido
@@ -2066,7 +2073,7 @@ async function loadAtendRel(tab) {
     .select('id,data,tab,responsavel,concluido_at,itens_concluidos,fotos,progresso')
     .eq('tab', _atRelTab)
     .order('data', { ascending: false })
-    .order('concluido_at', { ascending: false, nullsFirst: true })
+    .order('concluido_at', { ascending: false, nullsFirst: false })
     .limit(120);
   if (error || !data || !data.length) {
     list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0;">Nenhum registro encontrado.</div>';
@@ -2091,6 +2098,7 @@ async function showAtendDet(date) {
   title.textContent = 'Detalhes — ' + date.split('-').reverse().join('/') + ' · ' + tabLabel;
   body.innerHTML = '<div style="color:var(--muted);font-size:13px;">Carregando...</div>';
   det.style.display = 'block';
+  setTimeout(() => det.scrollIntoView({behavior:'smooth', block:'start'}), 50);
   if (!window._sb) return;
   const [{ data: sessoes }, { data: fotosDB }] = await Promise.all([
     window._sb.from('atendimento_sessoes').select('*').eq('tab',_atRelTab).eq('data',date),
