@@ -4,7 +4,8 @@
     { "source": "/producao", "destination": "/producao-tablet.html" },
     { "source": "/finalizacao", "destination": "/finalizacao-tablet.html" },
     { "source": "/atendimento", "destination": "/atendimento-tablet.html" },
-    { "source": "/admin", "destination": "/admin.html" }
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/login", "destination": "/login.html" }
   ],
   "headers": [
     {
